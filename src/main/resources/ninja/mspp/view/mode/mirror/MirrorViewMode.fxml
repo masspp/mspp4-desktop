@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<BorderPane fx:id="pane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ninja.mspp.view.mode.mirror.MirrorViewMode">
+   <center>
+      <SplitPane dividerPositions="0.3" BorderPane.alignment="CENTER">
+         <items>
+            <SplitPane dividerPositions="0.3, 0.6" orientation="VERTICAL">
+               <items>
+                  <BorderPane fx:id="sampleTablePane" />
+                  <BorderPane fx:id="chromatogramTablePane">
+                     <bottom>
+                        <GridPane alignment="CENTER_LEFT" hgap="3.0" vgap="3.0" BorderPane.alignment="CENTER">
+                          <columnConstraints>
+                            <ColumnConstraints fillWidth="false" hgrow="NEVER" />
+                            <ColumnConstraints hgrow="ALWAYS" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <ToggleButton fx:id="chromatogramUpButton" mnemonicParsing="false" onAction="#onChromatogramUp" selected="true" text="U" />
+                              <ToggleButton fx:id="chromatogramDownButton" mnemonicParsing="false" onAction="#onChromatogramDown" text="D" GridPane.rowIndex="1" />
+                              <Label fx:id="chromatogramUpLabel" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" />
+                              <Label fx:id="chromatogramDownLabel" layoutX="40.0" layoutY="15.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                           </children>
+                        </GridPane>
+                     </bottom>
+                  </BorderPane>
+                  <BorderPane fx:id="spectrumTablePane">
+                     <bottom>
+                        <GridPane hgap="3.0" vgap="3.0" BorderPane.alignment="CENTER_LEFT">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="NEVER" />
+                            <ColumnConstraints hgrow="ALWAYS" minWidth="-Infinity" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <ToggleButton fx:id="spectrumUpButton" mnemonicParsing="false" onAction="#onSpectrumUp" selected="true" text="U" />
+                              <ToggleButton fx:id="spectrumDownButton" mnemonicParsing="false" onAction="#onSpectrumDown" text="D" GridPane.rowIndex="1" />
+                              <Label fx:id="spectrumUpLabel" GridPane.columnIndex="1" />
+                              <Label fx:id="spectrumDownLabel" layoutX="40.0" layoutY="17.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                           </children>
+                        </GridPane>
+                     </bottom>
+                  </BorderPane>
+               </items>
+            </SplitPane>
+            <TabPane fx:id="tabs" tabClosingPolicy="UNAVAILABLE">
+              <tabs>
+                <Tab fx:id="chromatogramTab" text="Chromatogram">
+      			<BorderPane fx:id="chromatogramPane" />
+                </Tab>
+                <Tab fx:id="spectrumTab" text="Spectrum">
+                	<BorderPane fx:id="spectrumPane" />
+                </Tab>
+              </tabs>
+            </TabPane>
+         </items>
+      </SplitPane>
+   </center>
+</BorderPane>

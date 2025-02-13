@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ninja.mspp.view.mode.normal.NormalViewMode">
+   <center>
+      <SplitPane dividerPositions="0.3" BorderPane.alignment="CENTER">
+         <items>
+            <SplitPane fx:id="tablePane" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" />
+            <BorderPane>
+               <center>
+                  <TabPane tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+                    <tabs>
+                      <Tab text="Profile">
+                      	<BorderPane>
+                              <center>
+                                 <SplitPane dividerPositions="0.5" orientation="VERTICAL" BorderPane.alignment="CENTER">
+                                    <items>
+                                       <BorderPane fx:id="chromatogramPane" />
+                                       <BorderPane fx:id="spectrumPane" />
+                                    </items>
+                                 </SplitPane>
+                              </center></BorderPane>
+                      </Tab>
+                      <Tab text="Heatmap">
+                      	<BorderPane fx:id="heatmapPane" />
+                      </Tab>
+                      <Tab text="3D">
+                        <BorderPane fx:id="threeDPane" />
+                      </Tab>
+                    </tabs>
+                  </TabPane>
+               </center>
+            </BorderPane>
+         </items>
+      </SplitPane>
+   </center>
+</BorderPane>

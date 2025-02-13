@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+
+<BorderPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ninja.mspp.view.panel.ThreeDPanel">
+   <bottom>
+      <HBox alignment="CENTER_LEFT" spacing="25.0" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+         <children>
+            <ChoiceBox fx:id="themeChoice" prefWidth="150.0" />
+            <CheckBox fx:id="axisCheck" mnemonicParsing="false" selected="true" text="Axis" />
+            <CheckBox fx:id="rtCheck" mnemonicParsing="false" selected="true" text="RT" />
+            <CheckBox fx:id="mzCheck" mnemonicParsing="false" selected="true" text="m/z" />
+            <CheckBox fx:id="intCheck" mnemonicParsing="false" selected="true" text="Intensity" />
+         </children>
+      </HBox>
+   </bottom>
+   <right>
+      <Slider fx:id="slider" orientation="VERTICAL" BorderPane.alignment="CENTER" />
+   </right>
+</BorderPane>
