@@ -13,6 +13,7 @@ import ninja.mspp.core.annotation.method.ChromatogramCanvasForeground;
 import ninja.mspp.core.annotation.method.OnSelectChromatogram;
 import ninja.mspp.core.annotation.method.OnSelectSpectrum;
 import ninja.mspp.core.annotation.method.SpectrumCanvasForeground;
+import ninja.mspp.core.model.PeakManager;
 import ninja.mspp.core.model.ms.Chromatogram;
 import ninja.mspp.core.model.ms.DataPoints;
 import ninja.mspp.core.model.ms.Peak;
@@ -28,33 +29,38 @@ import ninja.mspp.core.view.DrawInfo;
 public class PeaksListener {
 	@OnSelectSpectrum(order = 0)
 	public void onSelectSpectrum(Spectrum spectrum) {
-		DataPoints points = spectrum.readDataPoints();
+		PeakManager manager = PeakManager.getInstance();
+				
+		if (!manager.hasPeaks(spectrum)) {
+			DataPoints points = spectrum.readDataPoints();
 		
-		PeakList peaks = null;
-		if (spectrum.isCentroidMode()) {
-			peaks = this.getCentroidPeaks(points);
-		}
-		else {
-			WakuraPeakDetection detector = new WakuraPeakDetection();
-			peaks = detector.detect(points);
-		}
+			PeakList peaks = null;
+			if (spectrum.isCentroidMode()) {
+				peaks = this.getCentroidPeaks(points);
+			}
+			else {
+				WakuraPeakDetection detector = new WakuraPeakDetection();
+				peaks = detector.detect(points);
+			}
 		
-		if(peaks != null) {
-			PeakManager manager = PeakManager.getInstance();
-			manager.setPeaks(spectrum, peaks);
+			if(peaks != null) {			
+				manager.setPeaks(spectrum, peaks);
+			}
 		}
 	}
 	
 	@OnSelectChromatogram(order = 0)
 	public void onSelectChromatogram(Chromatogram chromatogram) {
-		DataPoints points = chromatogram.readDataPoints();
+		PeakManager manager = PeakManager.getInstance();
+		
+		if (!manager.hasPeaks(chromatogram)) {
+			DataPoints points = chromatogram.readDataPoints();
+			WakuraPeakDetection detector = new WakuraPeakDetection();
+			PeakList peaks = detector.detect(points);
 
-		WakuraPeakDetection detector = new WakuraPeakDetection();
-		PeakList peaks = detector.detect(points);
-
-		if (peaks != null) {
-			PeakManager manager = PeakManager.getInstance();
-			manager.setPeaks(chromatogram, peaks);
+			if (peaks != null) {			
+				manager.setPeaks(chromatogram, peaks);
+			}
 		}
 	}
 	
@@ -73,43 +79,49 @@ public class PeaksListener {
 		
 		return peaks;
 	}
-	
+
+
 	@SpectrumCanvasForeground
 	public void drawSpectrumLabels(DrawInfo<Spectrum> draw) {
 		PeakManager manager = PeakManager.getInstance();
 		
 		Spectrum spectrum = draw.getObject();
-		PeakList peaks = manager.getPeaks(spectrum);
+		if (manager.hasPeaks(spectrum)) {
+			PeakList peaks = manager.getPeaks(spectrum);
 		
-		Graphics2D g = draw.getGraphics();
-		Bounds margin = draw.getMargin();
-		DataPoints points = draw.getPoints();
-		double width = draw.getWidth();
-		double height = draw.getHeight();
-		RealMatrix matrix = draw.getMatrix();
-		Range xRange = draw.getXRange();
-		Range yRange = draw.getYRange();
+			Graphics2D g = draw.getGraphics();
+			Bounds margin = draw.getMargin();
+			DataPoints points = draw.getPoints();
+			double width = draw.getWidth();
+			double height = draw.getHeight();
+			RealMatrix matrix = draw.getMatrix();
+			Range xRange = draw.getXRange();
+			Range yRange = draw.getYRange();
 		
-		this.drawLabels(peaks, g, points, matrix, width, height, xRange, yRange, margin);
+			this.drawLabels(peaks, g, points, matrix, width, height, xRange, yRange, margin);
+		}
 	}
-	
+
+
 	@ChromatogramCanvasForeground
 	public void drawChromatogramLabels(DrawInfo<Chromatogram> draw) {
 		PeakManager manager = PeakManager.getInstance();
 
 		Chromatogram chromatogram = draw.getObject();
-		PeakList peaks = manager.getPeaks(chromatogram);
+		if (manager.hasPeaks(chromatogram)) {
+			PeakList peaks = manager.getPeaks(chromatogram);
 
-		Graphics2D g = draw.getGraphics();
-		Bounds margin = draw.getMargin();
-		DataPoints points = draw.getPoints();
-		double width = draw.getWidth();
-		double height = draw.getHeight();
-		RealMatrix matrix = draw.getMatrix();
-		Range xRange = draw.getXRange();
-		Range yRange = draw.getYRange();
+			Graphics2D g = draw.getGraphics();
+			Bounds margin = draw.getMargin();
+			DataPoints points = draw.getPoints();
+			double width = draw.getWidth();
+			double height = draw.getHeight();
+			RealMatrix matrix = draw.getMatrix();
+			Range xRange = draw.getXRange();
+			Range yRange = draw.getYRange();
 
-		this.drawLabels(peaks, g, points, matrix, width, height, xRange, yRange, margin);
+			this.drawLabels(peaks, g, points, matrix, width, height, xRange, yRange, margin);
+		}
 	}
 	
 	private void drawLabels(

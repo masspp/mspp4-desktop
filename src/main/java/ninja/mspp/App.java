@@ -14,7 +14,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javafx.application.Application;
@@ -82,7 +81,6 @@ public class App extends Application {
         		try {
         			this.serverSocket = new ServerSocket(port);
         			System.out.println("Server started on port " + port);
-                
 
         			while (!Thread.currentThread().isInterrupted()) {
         				Socket clientSocket = this.serverSocket.accept();
@@ -116,6 +114,8 @@ public class App extends Application {
 	                    
 	                    if (requestParts.length >= 3) {
 	                        String method = requestParts[0];
+	                        String path = requestParts[1];
+	                        String operation = path.replace("/", "");
 	                        
 	                        Map<String, String> headers = new HashMap<>();
 	                        String headerLine;
@@ -139,12 +139,7 @@ public class App extends Application {
 	                            jsonBody = new String(bodyChars);
 	                            System.out.println("Received JSON: " + jsonBody);
 	                            
-	                            ObjectMapper mapper = new ObjectMapper();
-	                            TypeReference<Map<String, String>> typeRef 
-	                                = new TypeReference<Map<String, String>>() {};        
-	                            Map<String, String> map = mapper.readValue(jsonBody, typeRef);
-	                            
-	                            response = this.processJsonRequest(map);
+	                            response = this.processJsonRequest(operation, jsonBody);
 	                        }
 	                        
 	                        OutputStream out = socket.getOutputStream();
@@ -169,15 +164,15 @@ public class App extends Application {
 		);
 	}
 
-	private String processJsonRequest(Map<String, String> map) throws JsonProcessingException {
-		String method = map.get("method");
+	
+	private String processJsonRequest(String operation, String data) throws JsonProcessingException {
 		MsppManager manager = MsppManager.getInstance();
 		List<ListenerMethod<Service>> list = manager.getMethods(Service.class);
 
 		Object object = null;
 		for(ListenerMethod<Service> element : list) {
-			if(element.getAnnotation().value().equals(method)) {
-				object = element.invoke(map);
+			if(element.getAnnotation().value().equals(operation)) {
+				object = element.invoke(data);
 			}
 		}
 		
