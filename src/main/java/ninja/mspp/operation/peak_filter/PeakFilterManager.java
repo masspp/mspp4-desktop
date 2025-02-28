@@ -467,8 +467,10 @@ public class PeakFilterManager {
 	
 	private Color getColor(String colorString) {
 		if (colorString.length() > 6) {
-			colorString = colorString.substring(2);
+			colorString = colorString.substring(2, 8);
 		}
+		colorString = "#" + colorString;
+		colorString = colorString.toUpperCase();
 		return Color.decode(colorString);
 	}
 
