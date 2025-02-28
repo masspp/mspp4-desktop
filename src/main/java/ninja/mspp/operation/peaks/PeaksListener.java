@@ -3,6 +3,7 @@ package ninja.mspp.operation.peaks;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -147,6 +148,8 @@ public class PeaksListener {
 			
 			if (x >= xRange.getStart() && x <= xRange.getEnd() && y >= yRange.getStart() && y <= yRange.getEnd()) {
 				Peak newPeak = new Peak(x, y, start, end);
+				newPeak.setImage(peak.getImage());
+				newPeak.setAnnotation(peak.getAnnotation());
 				list.add(newPeak);
 			}
 		}
@@ -166,6 +169,7 @@ public class PeaksListener {
 		);
 		
 		List<Rect> rects = new ArrayList<Rect>();
+		List<Rect> imageRects = new ArrayList<Rect>();
 		double left = margin.getLeft();
 		double top = margin.getTop();
 		double bottom = height - margin.getBottom();
@@ -209,12 +213,47 @@ public class PeaksListener {
                 if(r.intersects(rect)) {
                     canDraw = false;
                 }
-            }
+            }					
 			
 			if(canDraw) {
 				g.drawString(label, (int)textLeft, (int)textTop);
-				rects.add(rect);
+				rects.add(rect);				
 			}
+			
+			Image image = peak.getImage();
+			if(image != null) {
+				int imageWidth = image.getWidth(null);
+				int imageHeight = image.getHeight(null);
+				
+				double imageLeft = position[0] - imageWidth / 2.0;
+				if (imageLeft < left) {
+					imageLeft = left;					
+				}
+				if (imageLeft + imageWidth > right) {
+					imageLeft = right - imageWidth;
+				}
+				
+				double imageTop = textTop - imageHeight;
+				if (imageTop < top) {
+					imageTop = top;
+				}				
+				if (imageTop + imageHeight > bottom) {
+					imageTop = bottom - imageHeight;
+				}
+				
+				boolean canDrawImage = true;
+				Rect imageRect = new Rect(imageLeft, imageTop, imageLeft + imageWidth, imageTop + imageHeight);
+				for (Rect r : imageRects) {
+					if (r.intersects(imageRect)) {
+						canDrawImage = false;
+					}
+				}
+				
+				if (canDrawImage) {
+                    imageRects.add(imageRect);				
+                    g.drawImage(image, (int) imageLeft, (int) imageTop, imageWidth, imageHeight, null);
+				}
+			}			
 		}
 		
 		g.setColor(color);
