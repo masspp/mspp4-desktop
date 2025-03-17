@@ -82,7 +82,6 @@
 			<groupId>ninja.mspp</groupId>
 			<artifactId>mspp4-core</artifactId>
 			<version>4.0.0</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
