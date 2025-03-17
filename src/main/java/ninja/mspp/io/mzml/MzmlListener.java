@@ -18,6 +18,7 @@ public class MzmlListener {
 	
 	@MenuAction(value = "File > Open > mzML...", order = 0)
 	public void onMzml() throws MSDKException {
+		GuiManager guiManager = GuiManager.getInstance();
 		MsppManager manager = MsppManager.getInstance();
 		
 		String folderName = manager.getParameter(FOLDER_KEY);
@@ -31,7 +32,7 @@ public class MzmlListener {
 				chooser.setInitialDirectory(new File(folderName));
 			}
 		}
-		File file = chooser.showOpenDialog(manager.getMainStage());
+		File file = chooser.showOpenDialog(guiManager.getMainStage());
 
 		if (file != null) {
 			GuiManager gui = GuiManager.getInstance();

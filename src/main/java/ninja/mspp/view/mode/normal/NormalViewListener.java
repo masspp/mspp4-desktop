@@ -14,6 +14,7 @@ import ninja.mspp.core.model.ms.Chromatogram;
 import ninja.mspp.core.model.ms.Spectrum;
 import ninja.mspp.core.model.view.HeatMap;
 import ninja.mspp.core.view.ViewInfo;
+import ninja.mspp.view.GuiManager;
 import ninja.mspp.view.panel.ChromatogramCanvas;
 import ninja.mspp.view.panel.HeatMapCanvas;
 import ninja.mspp.view.panel.SpectrumCanvas;
@@ -23,7 +24,7 @@ import ninja.mspp.view.panel.ThreeDPanel;
 public class NormalViewListener {
 	@ViewMode(value = "Normal", order = 0)
 	public Parent createNormalView() throws IOException {
-		MsppManager manager = MsppManager.getInstance();
+		GuiManager manager = GuiManager.getInstance();
 		ViewInfo<NormalViewMode> info = manager.createWindow(NormalViewMode.class, "NormalViewMode.fxml");
 		return info.getWindow();
 	}

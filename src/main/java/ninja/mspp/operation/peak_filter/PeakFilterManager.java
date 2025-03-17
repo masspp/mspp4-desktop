@@ -36,6 +36,7 @@ import ninja.mspp.core.view.ViewInfo;
 import ninja.mspp.operation.peak_filter.model.HitPeak;
 import ninja.mspp.operation.peak_filter.model.entity.FilterPeak;
 import ninja.mspp.operation.peak_filter.model.entity.FilterPeakSet;
+import ninja.mspp.view.GuiManager;
 
 public class PeakFilterManager {
 	private static PeakFilterManager instance;
@@ -237,7 +238,8 @@ public class PeakFilterManager {
 		this.peaks = peaks;
 		this.result = result;
 		MsppManager manager = MsppManager.getInstance();
-		ViewInfo<ResultDialog> viewInfo = manager.showDialog(ResultDialog.class, "ResultDialog.fxml", "Peak Filter Result");
+		GuiManager guiManager = GuiManager.getInstance();
+		ViewInfo<ResultDialog> viewInfo = guiManager.showDialog(ResultDialog.class, "ResultDialog.fxml", "Peak Filter Result");
 		ResultDialog dialog = viewInfo.getController();
 		dialog.setResult(peaks, result);
 		
@@ -250,7 +252,7 @@ public class PeakFilterManager {
 	}
 	
 	public void openDialog(Sample sample) throws IOException {
-		MsppManager manager = MsppManager.getInstance();
+		GuiManager manager = GuiManager.getInstance();
 		ViewInfo<PeakFilterDialog> viewInfo = manager.showDialog(PeakFilterDialog.class, "PeakFilterDialog.fxml", "Peak Filter");
 		PeakFilterDialog dialog = viewInfo.getController();
 		dialog.setSample(sample);

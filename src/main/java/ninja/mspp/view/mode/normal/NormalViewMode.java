@@ -8,11 +8,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
-import ninja.mspp.MsppManager;
 import ninja.mspp.core.model.ms.Chromatogram;
 import ninja.mspp.core.model.ms.Sample;
 import ninja.mspp.core.model.ms.Spectrum;
 import ninja.mspp.core.view.ViewInfo;
+import ninja.mspp.view.GuiManager;
 import ninja.mspp.view.panel.ChromatogramCanvas;
 import ninja.mspp.view.panel.HeatMapPanel;
 import ninja.mspp.view.panel.SpectrumCanvas;
@@ -81,10 +81,10 @@ public class NormalViewMode implements Initializable {
 			}
 		);
 		
-		MsppManager msppManager = MsppManager.getInstance();
+		GuiManager guiManager = GuiManager.getInstance();
 		
 		try {
-			ViewInfo<HeatMapPanel> heatmapInfo = msppManager.createWindow(HeatMapPanel.class, "HeatMapPanel.fxml");
+			ViewInfo<HeatMapPanel> heatmapInfo = guiManager.createWindow(HeatMapPanel.class, "HeatMapPanel.fxml");
 			this.heatmapPane.setCenter(heatmapInfo.getWindow());
 			manager.setHeatMapCanvas(heatmapInfo.getController().getCanvas());
 			this.heatmapPane.widthProperty().addListener(
@@ -103,7 +103,7 @@ public class NormalViewMode implements Initializable {
 		}
 		
 		try {
-			ViewInfo<ThreeDPanel> threeDInfo = msppManager.createWindow(ThreeDPanel.class, "ThreeDPanel.fxml");
+			ViewInfo<ThreeDPanel> threeDInfo = guiManager.createWindow(ThreeDPanel.class, "ThreeDPanel.fxml");
 			this.threeDPane.setCenter(threeDInfo.getWindow());
 			manager.setThreeDPanel(threeDInfo.getController());
 			this.threeDPane.widthProperty().addListener(

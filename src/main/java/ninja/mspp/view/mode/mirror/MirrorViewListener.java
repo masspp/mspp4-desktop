@@ -11,12 +11,13 @@ import ninja.mspp.core.annotation.method.ViewMode;
 import ninja.mspp.core.model.ms.Chromatogram;
 import ninja.mspp.core.model.ms.Spectrum;
 import ninja.mspp.core.view.ViewInfo;
+import ninja.mspp.view.GuiManager;
 
 @Listener("Mirror View Mode")
 public class MirrorViewListener {
 	@ViewMode(value = "Mirror")
 	public Parent createMirrorView() throws IOException {
-		MsppManager manager = MsppManager.getInstance();
+		GuiManager manager = GuiManager.getInstance();
         ViewInfo<MirrorViewMode> info = manager.createWindow(MirrorViewMode.class, "MirrorViewMode.fxml");
         return info.getWindow();
     }

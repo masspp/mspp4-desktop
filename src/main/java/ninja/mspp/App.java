@@ -24,6 +24,7 @@ import javafx.stage.Stage;
 import ninja.mspp.core.annotation.method.Service;
 import ninja.mspp.core.model.listener.ListenerMethod;
 import ninja.mspp.core.view.ViewInfo;
+import ninja.mspp.view.GuiManager;
 import ninja.mspp.view.MainFrame;
 
 
@@ -34,12 +35,13 @@ public class App extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {		
 		MsppManager manager = MsppManager.getInstance();
-		manager.setMainStage(primaryStage);
+		GuiManager guiManager = GuiManager.getInstance();
+		guiManager.setMainStage(primaryStage);
 		
-		ViewInfo<MainFrame> viewInfo = manager.createWindow(MainFrame.class, "MainFrame.fxml");
+		ViewInfo<MainFrame> viewInfo = guiManager.createWindow(MainFrame.class, "MainFrame.fxml");
 		Parent root = viewInfo.getWindow();
 		MainFrame mainFrame = viewInfo.getController();
-		manager.setMainFrame(mainFrame);
+		guiManager.setMainFrame(mainFrame);
 		
 		Scene scene = new Scene(root);
 		primaryStage.setScene(scene);
