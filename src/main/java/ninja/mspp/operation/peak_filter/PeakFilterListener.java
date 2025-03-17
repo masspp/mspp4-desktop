@@ -16,12 +16,14 @@ import ninja.mspp.core.model.ms.Spectrum;
 import ninja.mspp.core.model.view.HeatMap;
 import ninja.mspp.core.view.DrawInfo;
 import ninja.mspp.core.view.ViewInfo;
+import ninja.mspp.view.GuiManager;
 
 @Listener("Peak Filter")
 public class PeakFilterListener {
 	@MenuAction("Tools > Peak Filter...")
 	public void onMenu(@ActiveSample Sample sample) throws IOException {
 		MsppManager manager = MsppManager.getInstance();
+		GuiManager guiManager = GuiManager.getInstance();
 		
 		if(sample == null) {
 			ResourceBundle messages = manager.getMessages();
@@ -33,7 +35,7 @@ public class PeakFilterListener {
 		}
 		else {
 			ViewInfo<PeakFilterDialog> viewInfo
-				= manager.showDialog(PeakFilterDialog.class, "PeakFilterDialog.fxml", "Peak Filter");
+				= guiManager.showDialog(PeakFilterDialog.class, "PeakFilterDialog.fxml", "Peak Filter");
 			viewInfo.getController().setSample(sample);
 		}
 	}

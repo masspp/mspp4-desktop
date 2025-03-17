@@ -15,12 +15,13 @@ import ninja.mspp.core.model.ms.Sample;
 import ninja.mspp.core.model.ms.XicChromatogram;
 import ninja.mspp.core.view.SpectrumActionEvent;
 import ninja.mspp.core.view.ViewInfo;
+import ninja.mspp.view.GuiManager;
 
 @Listener("XIC")
 public class XicListener {
 	@SpectrumAction("XIC ...")
 	public void createXIC(SpectrumActionEvent event) throws IOException {
-		MsppManager manager = MsppManager.getInstance();
+		GuiManager manager = GuiManager.getInstance();
 		ViewInfo<XicDialog> info = manager.createWindow(XicDialog.class, "XicDialog.fxml");
 		
 		Parent parent = info.getWindow();

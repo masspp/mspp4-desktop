@@ -30,6 +30,7 @@ import ninja.mspp.operation.mass_calculator.model.mass.CompoundCreator;
 import ninja.mspp.operation.mass_calculator.model.mass.CompoundType;
 import ninja.mspp.operation.mass_calculator.model.mass.MassCalculator;
 import ninja.mspp.operation.peak_filter.PeakFilterDialog;
+import ninja.mspp.view.GuiManager;
 
 public class MassCalculatorDialog {
 
@@ -207,8 +208,10 @@ public class MassCalculatorDialog {
 			return;
 		}
 
-		if (currentStageForPeakFilter == null)
-			setUpPeakFilterDialog(manager);
+		if (currentStageForPeakFilter == null) {
+			GuiManager guiManager = GuiManager.getInstance();
+			setUpPeakFilterDialog(manager, guiManager);
+		}
 
 		// Set the mass and mz values
 		String name = nameField.getText();
@@ -220,14 +223,14 @@ public class MassCalculatorDialog {
 		currentStageForPeakFilter.show();
 	}
 
-	private void setUpPeakFilterDialog(MsppManager manager) throws IOException {
+	private void setUpPeakFilterDialog(MsppManager manager, GuiManager guiManager) throws IOException {
 		FXMLLoader loader = new FXMLLoader(PeakFilterDialog.class.getResource("PeakFilterDialog.fxml"));
 		Parent root = loader.load();
 		peakFilterDialog = loader.getController();
 		peakFilterDialog.setSample(manager.getActiveSample());
 
 		Stage stage = new Stage();
-		stage.initOwner(manager.getMainStage());
+		stage.initOwner(guiManager.getMainStage());
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
 		currentStageForPeakFilter = stage;

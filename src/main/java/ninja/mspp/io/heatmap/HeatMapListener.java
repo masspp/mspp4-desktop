@@ -8,6 +8,7 @@ import ninja.mspp.core.model.ms.Sample;
 import ninja.mspp.core.model.ms.Spectrum;
 import ninja.mspp.core.model.view.HeatMap;
 import ninja.mspp.interfaces.Job;
+import ninja.mspp.view.GuiManager;
 
 @Listener("Heatmap Listener")
 public class HeatMapListener {
@@ -21,7 +22,9 @@ public class HeatMapListener {
 		}
 
 		if(count > 1) {
+			GuiManager guiManager = GuiManager.getInstance();
 			MsppManager manager = MsppManager.getInstance();
+			
 			Job job = new Job() {
 				@Override
 				public Object execute() {
@@ -35,7 +38,7 @@ public class HeatMapListener {
 					manager.invoke(OnHeatMap.class, heatmap);
 				}
 			};
-			manager.startTask(job);
+			guiManager.startTask(job);
 		}
 	}
 }
