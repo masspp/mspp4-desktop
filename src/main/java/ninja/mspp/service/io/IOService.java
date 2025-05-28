@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,12 +48,12 @@ public class IOService {
 	@Service("io_add_scan")
 	public static String addScan(String request) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
-		TypeReference<Scan> typeRef = new TypeReference<Scan>() {};
+		mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 		
 		IOServiceManager manager = IOServiceManager.getInstance();
 		
-		String unescapedJson = mapper.readValue(request, String.class);
-		Scan scan = mapper.readValue(unescapedJson, typeRef);
+		TypeReference<Scan> typeRef = new TypeReference<Scan>() {};
+		Scan scan = mapper.readValue(request, typeRef);
 		String id = scan.getId();
 		
 		manager.addScan(id, scan);
@@ -66,8 +68,7 @@ public class IOService {
 	@Service("io_flush")
 	public static String flush(String request) throws Exception {		
 		ObjectMapper mapper = new ObjectMapper();
-		String unescapedJson = mapper.readValue(request, String.class);
-		Map<String, String> requestMap = mapper.readValue(unescapedJson, new TypeReference<Map<String, String>>() {});
+		Map<String, String> requestMap = mapper.readValue(request, new TypeReference<Map<String, String>>() {});
 		
 		String id = requestMap.get("id");
 		int index = Integer.parseInt(requestMap.get("index"));
@@ -80,11 +81,7 @@ public class IOService {
 			PeakManager peakManager = PeakManager.getInstance();
 			
 			Spectrum spectrum = sample.getSpectra().get(index);
-			
-			msppManager.invoke(OnOpenSample.class, sample);
-			msppManager.invoke(OnSelectSample.class, sample);
-			msppManager.invoke(OnSelectSpectrum.class, spectrum);
-			
+						
 			PeakList peakList = manager.getPeakList(id);
 			peakList.sort(
 				(p1, p2) -> {
@@ -109,6 +106,10 @@ public class IOService {
 				TicChromatogram ticChromatogram = new TicChromatogram(sample);
 				sample.getChromatograms().add(ticChromatogram);
 			}
+			
+			msppManager.invoke(OnOpenSample.class, sample);
+			msppManager.invoke(OnSelectSample.class, sample);
+			msppManager.invoke(OnSelectSpectrum.class, spectrum);			
 		}
 		
 		Map<String, String> result = new HashMap<String, String>();
@@ -125,8 +126,7 @@ public class IOService {
         
         IOServiceManager manager = IOServiceManager.getInstance();
 
-        String unescapedJson = mapper.readValue(request, String.class);
-        List<Annotation> annotations = mapper.readValue(unescapedJson, typeRef);
+        List<Annotation> annotations = mapper.readValue(request, typeRef);
         
         for(Annotation annotation : annotations) {
             String id = annotation.getId();

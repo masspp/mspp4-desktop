@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,136 +127,124 @@ public class PeaksListener {
 	}
 	
 	private void drawLabels(
-			PeakList peaks, 
-			Graphics2D g, 
-			DataPoints points,
-			RealMatrix matrix,
-			double width,
-			double height,
-			Range xRange,
-			Range yRange,
-			Bounds margin
+	        PeakList peaks, 
+	        Graphics2D g, 
+	        DataPoints points,
+	        RealMatrix matrix,
+	        double width,
+	        double height,
+	        Range xRange,
+	        Range yRange,
+	        Bounds margin
 	) {
-		Color color = g.getColor();
-		g.setColor(Color.BLACK);
-		
-		PeakList list = new PeakList();
-		for (Peak peak : peaks) {
-			double x = peak.getX();
-			double y = peak.getY();
-			double start = peak.getStart();
-			double end = peak.getEnd();
-			
-			if (x >= xRange.getStart() && x <= xRange.getEnd() && y >= yRange.getStart() && y <= yRange.getEnd()) {
-				Peak newPeak = new Peak(x, y, start, end);
-				newPeak.setImage(peak.getImage());
-				newPeak.setAnnotation(peak.getAnnotation());
-				list.add(newPeak);
-			}
-		}
-			
-		list.sort(
-			(a, b) -> {
-				int cmd = 0;
-				double diff = a.getY() - b.getY();
-				if (diff < 0.0) {
-					cmd = 1;
-				}
-				else if (diff > 0.0) {
-					cmd = -1;
-				}
-				return cmd;
-			}
-		);
-		
-		List<Rect> rects = new ArrayList<Rect>();
-		List<Rect> imageRects = new ArrayList<Rect>();
-		double left = margin.getLeft();
-		double top = margin.getTop();
-		double bottom = height - margin.getBottom();
-		double right = width - margin.getRight();
-		FontMetrics metrics = g.getFontMetrics();
-		
-		double textHeight = g.getFont().getSize();
+	    Color color = g.getColor();
+	    g.setColor(Color.BLACK);
 
-		for(Peak peak : list) {
-			String label = String.format("%.3f", peak.getX());
-			double textWidth = metrics.stringWidth(label);
-			
-			double[] coordinates = {peak.getX(), peak.getY(), 1.0};
-			double[] position = matrix.operate(coordinates);
-			
-			double textLeft = position[0] - textWidth / 2.0;
-			if(textLeft < left) {
-				textLeft = left;
-			}
-			
-			double textRight = textLeft + textWidth;
-			if(textRight > right) {
-				textRight = right;
-                textLeft = right - textWidth;
-            }
-			
-			double textTop = position[1] - textHeight;
-			if(textTop < top) {
-                textTop = top;
-            }
-			
-			double textBottom = textTop + textHeight;
-			if(textBottom > bottom) {
-                textBottom = bottom;
-                textTop = bottom - textHeight;
-            }
-			
-			boolean canDraw = true;
-			Rect rect = new Rect(textLeft, textTop, textRight, textBottom);
-			for(Rect r : rects) {
-                if(r.intersects(rect)) {
-                    canDraw = false;
-                }
-            }					
-			
-			if(canDraw) {
-				g.drawString(label, (int)textLeft, (int)textTop);
-				rects.add(rect);				
-			}
-			
-			Image image = peak.getImage();
-			if(image != null) {
-				int imageWidth = image.getWidth(null);
-				int imageHeight = image.getHeight(null);
-				
-				double imageLeft = position[0] - imageWidth / 2.0;
-				if (imageLeft < left) {
-					imageLeft = left;					
+	    PeakList list = new PeakList();
+	    for (Peak peak : peaks) {
+	        double x = peak.getX();
+	        double y = peak.getY();
+	        double start = peak.getStart();
+	        double end = peak.getEnd();
+	        
+	        if (x >= xRange.getStart() && x <= xRange.getEnd() && y >= yRange.getStart() && y <= yRange.getEnd()) {
+	            Peak newPeak = new Peak(x, y, start, end);
+	            newPeak.setImage(peak.getImage());
+	            newPeak.setAnnotation(peak.getAnnotation());
+	            list.add(newPeak);
+	        }
+	    }
+
+	    list.sort((a, b) -> Double.compare(b.getY(), a.getY())); // 高い順
+
+	    List<Rect> rects = new ArrayList<>();
+	    List<Rect> imageRects = new ArrayList<>();
+	    double left = margin.getLeft();
+	    double top = margin.getTop();
+	    double bottom = height - margin.getBottom();
+	    double right = width - margin.getRight();
+	    FontMetrics metrics = g.getFontMetrics();
+	    double textHeight = g.getFont().getSize();
+
+	    for (Peak peak : list) {
+	        String label = String.format("%.3f", peak.getX());
+	        double textWidth = metrics.stringWidth(label);
+	        double[] coordinates = {peak.getX(), peak.getY(), 1.0};
+	        double[] position = matrix.operate(coordinates);
+
+	        double textLeft = Math.max(left, position[0] - textWidth / 2.0);
+	        double textRight = Math.min(right, textLeft + textWidth);
+	        textLeft = textRight - textWidth;
+
+	        double textTop = Math.max(top, position[1] - textHeight);
+	        double textBottom = Math.min(bottom, textTop + textHeight);
+	        textTop = textBottom - textHeight;
+
+	        boolean canDraw = true;
+	        Rect rect = new Rect(textLeft, textTop, textRight, textBottom);
+	        for (Rect r : rects) {
+	            if (r.intersects(rect)) {
+	                canDraw = false;
+	            }
+	        }
+
+	        Image image = peak.getImage();
+	        if (image != null) {
+	            Image transparentImage = makeWhiteTransparent(image);
+	            int originalWidth = transparentImage.getWidth(null);
+	            int originalHeight = transparentImage.getHeight(null);
+
+	            double scale = 1.0;
+	            int shortSide = Math.min(originalWidth, originalHeight);
+	            if (shortSide > 75) {
+	                scale = 75.0 / shortSide;
+	            }
+	            int scaledWidth = (int) (originalWidth * scale);
+	            int scaledHeight = (int) (originalHeight * scale);
+
+	            double imageLeft = Math.max(left, Math.min(right - scaledWidth, position[0] - scaledWidth / 2.0));
+	            double imageTop = Math.max(top, textTop - scaledHeight);
+	            textTop = imageTop - textHeight;
+				if (textTop < top + textHeight + 1) {
+					textTop = top + textHeight + 1;
 				}
-				if (imageLeft + imageWidth > right) {
-					imageLeft = right - imageWidth;
-				}
-				
-				double imageTop = textTop - imageHeight;
-				if (imageTop < top) {
-					imageTop = top;
-				}				
-				if (imageTop + imageHeight > bottom) {
-					imageTop = bottom - imageHeight;
-				}
-				
-				boolean canDrawImage = true;
-				Rect imageRect = new Rect(imageLeft, imageTop, imageLeft + imageWidth, imageTop + imageHeight);
-				for (Rect r : imageRects) {
-					if (r.intersects(imageRect)) {
-						canDrawImage = false;
-					}
-				}
-				
-				if (canDrawImage) {
-                    imageRects.add(imageRect);				
-                    g.drawImage(image, (int) imageLeft, (int) imageTop, imageWidth, imageHeight, null);
-				}
-			}			
-		}
-		
-		g.setColor(color);
+	            imageTop = Math.min(imageTop, bottom - scaledHeight);
+
+	            Rect imageRect = new Rect(imageLeft, imageTop, imageLeft + scaledWidth, imageTop + scaledHeight);
+	            boolean canDrawImage = imageRects.stream().noneMatch(r -> r.intersects(imageRect));
+
+	            if (canDrawImage) {
+	                imageRects.add(imageRect);
+	                g.drawImage(transparentImage, (int) imageLeft, (int) imageTop, scaledWidth, scaledHeight, null);
+	            }
+	        }
+
+	        if (canDraw) {
+	            g.drawString(label, (int)textLeft, (int)textTop);
+	            rects.add(rect);
+	        }
+	    }
+
+	    g.setColor(color);
+	}
+
+	private Image makeWhiteTransparent(Image image) {
+	    int w = image.getWidth(null);
+	    int h = image.getHeight(null);
+	    BufferedImage transparent = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+	    Graphics2D g2 = transparent.createGraphics();
+	    g2.drawImage(image, 0, 0, null);
+	    g2.dispose();
+
+	    for (int y = 0; y < h; y++) {
+	        for (int x = 0; x < w; x++) {
+	            int rgb = transparent.getRGB(x, y);
+	            if ((rgb & 0x00FFFFFF) == 0x00FFFFFF) {
+	                transparent.setRGB(x, y, 0x00FFFFFF & rgb);
+	            }
+	        }
+	    }
+
+	    return transparent;
 	}
 }

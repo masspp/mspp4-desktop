@@ -28,7 +28,7 @@ public class ProfileCanvas extends CanvasBase {
 	protected static final int TITLE_MARGIN = 5;
 	protected static final int TICK_PARAMETER = 8;
 	protected static final int TICK_LENGTH = 5;
-	protected static final double AUTO_MAX_Y_RATE = 1.30;
+	protected static final double AUTO_MAX_Y_RATE = 1.3;
 
 	protected DrawingData data;
 	protected DataPoints points;
@@ -301,6 +301,14 @@ public class ProfileCanvas extends CanvasBase {
 			if (!points.isEmpty()) {
 				start = points.get(0).getX();
 				end = points.get(points.size() - 1).getX();
+				double range = end - start;
+				range *= 1.1;
+				double mid = (start + end) / 2.0;
+				start = mid - range / 2.0;
+				if(start < 0.0) {
+					start = 0.0;
+				}
+				end = start + range;
 			}
 		} 
 		else {
