@@ -5,11 +5,11 @@ on:
     branches: [ main ]
     tags: [ 'v*' ]
   pull_request:
-    branches: [ main ]
+    branches: [ main , deploy ]
   workflow_dispatch:
 
 env:
-  JAVA_VERSION: '17'
+  JAVA_VERSION: '21'
   JAVA_DISTRIBUTION: 'temurin'
 
 jobs:
@@ -22,6 +22,9 @@ jobs:
           - os: ubuntu-latest
             platform: linux
             installer-type: deb
+          - os: redhat-latest
+            platform: linux
+            installer-type: rpm
           - os: windows-latest
             platform: windows
             installer-type: msi
@@ -128,16 +131,16 @@ jobs:
       run: |
         $JAVA_HOME/bin/jpackage \
           --input mspp-desktop/target \
-          --name "MSPP4" \
+          --name "MS++4" \
           --main-jar mspp-desktop-*.jar \
-          --main-class com.example.mspp.desktop.MainApp \
+          --main-class ninja.mspp.MsppLauncher \
           --type ${{ matrix.installer-type }} \
           --dest installers \
           --runtime-image runtime-image \
           --app-version ${{ steps.version.outputs.VERSION }} \
-          --vendor "MSPP4 Team" \
-          --description "Mass Spectrometry Post-Processing Platform 4" \
-          --copyright "Copyright © 2024 MSPP4 Team" \
+          --vendor "MS++4 Team" \
+          --description "Mass Spectrometry Plus-Plus Platform 4" \
+          --copyright "Copyright © 2025 MS++4 Team" \
           --linux-shortcut \
           --linux-menu-group "Science"
 
@@ -146,16 +149,16 @@ jobs:
       run: |
         $env:JAVA_HOME/bin/jpackage.exe `
           --input mspp-desktop/target `
-          --name "MSPP4" `
+          --name "MS++4" `
           --main-jar (Get-ChildItem mspp-desktop/target/mspp-desktop-*.jar | Select-Object -First 1).Name `
-          --main-class com.example.mspp.desktop.MainApp `
+          --main-class ninja.mspp.MsppLauncher `
           --type ${{ matrix.installer-type }} `
           --dest installers `
           --runtime-image runtime-image `
           --app-version ${{ steps.version.outputs.VERSION }} `
           --vendor "MSPP4 Team" `
           --description "Mass Spectrometry Post-Processing Platform 4" `
-          --copyright "Copyright © 2024 MSPP4 Team" `
+          --copyright "Copyright © 2025 MS++4 Team" `
           --win-shortcut `
           --win-menu `
           --win-dir-chooser
@@ -168,14 +171,14 @@ jobs:
           --input mspp-desktop/target \
           --name "MSPP4" \
           --main-jar $(ls mspp-desktop/target/mspp-desktop-*.jar | head -1 | xargs basename) \
-          --main-class com.example.mspp.desktop.MainApp \
+          --main-class ninja.mspp.MsppLauncher \
           --type ${{ matrix.installer-type }} \
           --dest installers \
           --runtime-image runtime-image \
           --app-version ${{ steps.version.outputs.VERSION }} \
           --vendor "MSPP4 Team" \
-          --description "Mass Spectrometry Post-Processing Platform 4" \
-          --copyright "Copyright © 2024 MSPP4 Team" \
+          --description "Mass Spectrometry Plus-Plus Platform 4" \
+          --copyright "Copyright © 2025 MS++4 Team" \
           --mac-sign
 
     - name: List created installers
