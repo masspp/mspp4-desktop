@@ -5,12 +5,14 @@ import java.awt.RenderingHints;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.imageio.ImageIO;
 
+import org.apache.batik.dom.GenericDOMImplementation;
+import org.apache.batik.svggen.SVGGraphics2D;
 import org.jfree.fx.FXGraphics2D;
-import org.jfree.graphics2d.svg.SVGGraphics2D;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
@@ -82,15 +84,17 @@ public abstract class CanvasBase extends Canvas {
 		int width = (int)Math.floor(this.widthProperty().doubleValue());
 		int height = (int)Math.floor(this.heightProperty().doubleValue());
 		
-		SVGGraphics2D g = new SVGGraphics2D(width, height);
+		DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
+		Document svgDoc = domImpl.createDocument("http://www.w3.org/2000/svg", "svg", null);
+		SVGGraphics2D g = new SVGGraphics2D(svgDoc);
+
 		this.onDraw(g, width, height);
 		
-		String svg = g.getSVGDocument();
-		PrintWriter writer = new PrintWriter(new FileWriter(file));
-		writer.print(svg);
-		writer.close();
+		g.dispose();
 		
-
+		FileWriter writer = new FileWriter(file);
+		g.stream(writer, true);
+		writer.close();
 	}
 	
 	@Override
