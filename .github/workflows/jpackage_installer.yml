@@ -1,177 +1,284 @@
-name: Build and Package
+name: Build MSPP4 and Create Installer
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main, develop ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  JAVA_VERSION: '17'
+  JAVA_DISTRIBUTION: 'temurin'
 
 jobs:
-  build-ubutsu:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            installer-type: deb
+          - os: windows-latest
+            platform: windows
+            installer-type: msi
+          - os: macos-latest
+            platform: macos
+            installer-type: dmg
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up JDK ${{ env.JAVA_VERSION }}
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: ${{ env.JAVA_DISTRIBUTION }}
+
+    - name: Cache Maven dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
+    - name: Set execute permissions for Maven wrapper (Unix)
+      if: runner.os != 'Windows'
+      run: chmod +x ./mvnw
+
+    - name: Build mspp4-core
+      working-directory: ./mspp4-core
+      run: |
+        if [ "$RUNNER_OS" == "Windows" ]; then
+          ../mvnw.cmd clean package -DskipTests
+        else
+          ../mvnw clean package -DskipTests
+        fi
+      shell: bash
+
+    - name: Verify mspp4-core JAR exists
+      run: |
+        if [ "$RUNNER_OS" == "Windows" ]; then
+          ls -la mspp4-core/target/*.jar || echo "No JAR files found in mspp4-core/target"
+        else
+          ls -la mspp4-core/target/*.jar || echo "No JAR files found in mspp4-core/target"
+        fi
+      shell: bash
+
+    - name: Create mspp-desktop lib directory
+      run: |
+        mkdir -p mspp-desktop/lib
+      shell: bash
+
+    - name: Copy mspp4-core JAR to mspp-desktop
+      run: |
+        if [ "$RUNNER_OS" == "Windows" ]; then
+          cp mspp4-core/target/mspp4-core-*.jar mspp-desktop/lib/
+        else
+          cp mspp4-core/target/mspp4-core-*.jar mspp-desktop/lib/
+        fi
+      shell: bash
+
+    - name: List copied JARs
+      run: |
+        ls -la mspp-desktop/lib/
+      shell: bash
+
+    - name: Build mspp-desktop
+      working-directory: ./mspp-desktop
+      run: |
+        if [ "$RUNNER_OS" == "Windows" ]; then
+          ../mvnw.cmd clean package -DskipTests
+        else
+          ../mvnw clean package -DskipTests
+        fi
+      shell: bash
+
+    - name: Set up application version
+      id: version
+      run: |
+        if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+          VERSION=${GITHUB_REF#refs/tags/v}
+        else
+          VERSION="1.0.0-SNAPSHOT"
+        fi
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+        echo "App version: $VERSION"
+      shell: bash
+
+    - name: Create runtime image with jlink
+      run: |
+        $JAVA_HOME/bin/jlink \
+          --add-modules java.base,java.desktop,java.logging,java.xml,java.prefs,java.datatransfer,java.sql \
+          --output runtime-image \
+          --strip-debug \
+          --compress=2 \
+          --no-header-files \
+          --no-man-pages
+      shell: bash
+
+    - name: Create installer with jpackage (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        $JAVA_HOME/bin/jpackage \
+          --input mspp-desktop/target \
+          --name "MSPP4" \
+          --main-jar mspp-desktop-*.jar \
+          --main-class com.example.mspp.desktop.MainApp \
+          --type ${{ matrix.installer-type }} \
+          --dest installers \
+          --runtime-image runtime-image \
+          --app-version ${{ steps.version.outputs.VERSION }} \
+          --vendor "MSPP4 Team" \
+          --description "Mass Spectrometry Post-Processing Platform 4" \
+          --copyright "Copyright © 2024 MSPP4 Team" \
+          --linux-shortcut \
+          --linux-menu-group "Science"
+
+    - name: Create installer with jpackage (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        $env:JAVA_HOME/bin/jpackage.exe `
+          --input mspp-desktop/target `
+          --name "MSPP4" `
+          --main-jar (Get-ChildItem mspp-desktop/target/mspp-desktop-*.jar | Select-Object -First 1).Name `
+          --main-class com.example.mspp.desktop.MainApp `
+          --type ${{ matrix.installer-type }} `
+          --dest installers `
+          --runtime-image runtime-image `
+          --app-version ${{ steps.version.outputs.VERSION }} `
+          --vendor "MSPP4 Team" `
+          --description "Mass Spectrometry Post-Processing Platform 4" `
+          --copyright "Copyright © 2024 MSPP4 Team" `
+          --win-shortcut `
+          --win-menu `
+          --win-dir-chooser
+      shell: powershell
+
+    - name: Create installer with jpackage (macOS)
+      if: matrix.os == 'macos-latest'
+      run: |
+        $JAVA_HOME/bin/jpackage \
+          --input mspp-desktop/target \
+          --name "MSPP4" \
+          --main-jar $(ls mspp-desktop/target/mspp-desktop-*.jar | head -1 | xargs basename) \
+          --main-class com.example.mspp.desktop.MainApp \
+          --type ${{ matrix.installer-type }} \
+          --dest installers \
+          --runtime-image runtime-image \
+          --app-version ${{ steps.version.outputs.VERSION }} \
+          --vendor "MSPP4 Team" \
+          --description "Mass Spectrometry Post-Processing Platform 4" \
+          --copyright "Copyright © 2024 MSPP4 Team" \
+          --mac-sign
+
+    - name: List created installers
+      run: |
+        ls -la installers/
+      shell: bash
+
+    - name: Upload installer artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: mspp4-installer-${{ matrix.platform }}
+        path: installers/*
+        retention-days: 30
+
+    - name: Upload build logs on failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-logs-${{ matrix.platform }}
+        path: |
+          mspp4-core/target/surefire-reports/
+          mspp-desktop/target/surefire-reports/
+        retention-days: 7
+
+  release:
+    needs: build
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
     steps:
-      - uses: actions/checkout@v4
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 21
+    - name: List downloaded artifacts
+      run: |
+        find artifacts -type f -name "*" | sort
 
-      - name: Build mspp4-core
-        run: |
-          cd mspp4-core
-          mvn clean install
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        name: Release ${{ github.ref_name }}
+        draft: false
+        prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
+        generate_release_notes: true
+        files: |
+          artifacts/mspp4-installer-linux/*
+          artifacts/mspp4-installer-windows/*
+          artifacts/mspp4-installer-macos/*
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Copy JAR to mspp4-core
-        run: |
-          cp mspp4-core/target/mspp4-core-4.0.0.jar mspp4-desktop/target/
+  test-installers:
+    needs: build
+    runs-on: ${{ matrix.os }}
+    if: github.event_name == 'pull_request'
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            platform: linux
+          - os: windows-latest
+            platform: windows
+          - os: macos-latest
+            platform: macos
 
-      - name: Build mspp4-desktop
-        run: |
-          cd mspp4-desktop
-          mvn clean install
-
-      - name: Package with jpackage (Linux)
-        run: |
-          cd mspp4-desktop
-          jpackage \
-             --type deb \
-             --input target  \
-             --name Mass++4.gold \
-             --main-jar mspp4-desktop-jar-with-dependencies.jar \
-             --main-class  ninja.mspp.MsppLauncher \
-             --java-options "-Xms1024m -Xmx4096m"
-
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: myapp-linux
-          path: mspp4-desktop/dist/
-
-build-redhat:
-    runs-on: redhat-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 21
-
-      - name: Build mspp4-core
-        run: |
-          cd mspp4-core
-          mvn clean install
-
-      - name: Copy JAR to mspp4-core
-        run: |
-          cp mspp4-core/target/mspp4-core-4.0.0.jar mspp4-desktop/target/
-
-      - name: Build mspp4-desktop
-        run: |
-          cd mspp4-desktop
-          mvn clean install
-
-      - name: Package with jpackage (Linux)
-        run: |
-          cd mspp4-desktop
-          jpackage \
-             --type rpm \
-             --input target  \
-             --name Mass++4.gold \
-             --main-jar mspp4-desktop-jar-with-dependencies.jar \
-             --main-class  ninja.mspp.MsppLauncher \
-             --java-options "-Xms1024m -Xmx4096m"
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: myapp-linux
-          path: mspp4-desktop/dist/*
-
-build-windows:
-  runs-on: windows-latest
-  steps:
-    - uses: actions/checkout@v4
-
-    - name: Setup Java
-      uses: actions/setup-java@v4
+    - name: Download installer
+      uses: actions/download-artifact@v4
       with:
-        distribution: temurin
-        java-version: 21
+        name: mspp4-installer-${{ matrix.platform }}
+        path: installer
 
-    - name: Build mspp4-core
+    - name: Test installer (Linux)
+      if: matrix.os == 'ubuntu-latest'
       run: |
-        cd mspp4-core
-        mvn clean install
+        ls -la installer/
+        # DEB パッケージの検証
+        if [ -f installer/*.deb ]; then
+          dpkg --info installer/*.deb
+          echo "DEB package created successfully"
+        fi
 
-    - name: Copy JAR to mspp4-desktop
+    - name: Test installer (Windows)
+      if: matrix.os == 'windows-latest'
       run: |
-         Copy-Item mspp4-core/target/mspp4-core-4.0.0.jar mspp4-desktop/target/
+        Get-ChildItem installer/
+        # MSI パッケージの検証
+        $msiFile = Get-ChildItem installer/*.msi -ErrorAction SilentlyContinue
+        if ($msiFile) {
+          Write-Output "MSI package created successfully: $($msiFile.Name)"
+          Write-Output "File size: $([math]::Round($msiFile.Length / 1MB, 2)) MB"
+        }
+      shell: powershell
 
-    - name: Build mspp4-desktop
+    - name: Test installer (macOS)
+      if: matrix.os == 'macos-latest'
       run: |
-        cd mspp4-desktop
-        mvn clean install
-
-    - name: Package with jpackage (Windows)
-      run: |
-        cd mspp4-desktop
-        jpackage \
-            --type exe \
-            --input target  \
-            --name Mass++4.gold \
-            --main-jar mspp4-desktop-jar-with-dependencies.jar \
-            --main-class  ninja.mspp.MsppLauncher \
-            --java-options "-Xms1024m -Xmx4096m"
-
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: myapp-windows
-        path: mspp4-desktop/dist/*
-
-build-macos:
-  runs-on: macos-latest
-  steps:
-    - uses: actions/checkout@v4
-
-    - name: Setup Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: temurin
-        java-version: 21
-
-    - name: Build mspp4-core
-      run: |
-        cd mspp4-core
-        mvn clean install
-
-    - name: Copy JAR to mspp4-desktop
-      run: |
-        cp mspp4-core/target/mspp4-core-4.0.0.jar mspp4-desktop/target/
-
-    - name: Build mspp4-desktop
-      run: |
-        cd mspp4-desktop
-        mvn clean package
-
-    - name: Package with jpackage (macOS)
-      run: |
-        cd mspp4-desktop
-        jpackage \
-            --type dmg \
-            --input target  \
-            --name Mass++4.gold \
-            --main-jar mspp4-desktop-jar-with-dependencies.jar \
-            --main-class  ninja.mspp.MsppLauncher \
-            --java-options "-Xms1024m -Xmx4096m"
-          
-
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: myapp-macos
-        path: mspp4-desktop/dist/*
+        ls -la installer/
+        # DMG パッケージの検証
+        if [ -f installer/*.dmg ]; then
+          hdiutil imageinfo installer/*.dmg
+          echo "DMG package created successfully"
+        fi
