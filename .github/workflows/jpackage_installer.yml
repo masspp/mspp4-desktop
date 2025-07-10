@@ -49,9 +49,7 @@ jobs:
           name: myapp-linux
           path: mspp4-desktop/dist/
 
-          build-ubutsu:
-
-build-ubutsu:
+build-redhat:
     runs-on: redhat-latest
     steps:
       - uses: actions/checkout@v4
@@ -93,87 +91,87 @@ build-ubutsu:
           name: myapp-linux
           path: mspp4-desktop/dist/*
 
-  build-windows:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
+build-windows:
+  runs-on: windows-latest
+  steps:
+    - uses: actions/checkout@v4
 
-      - name: Setup Java
+    - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
 
-      - name: Build mspp4-core
-        run: |
-          cd mspp4-core
-          mvn clean install
+    - name: Build mspp4-core
+      run: |
+        cd mspp4-core
+        mvn clean install
 
-      - name: Copy JAR to mspp4-desktop
-        run: |
-          Copy-Item mspp4-core/target/mspp4-core-4.0.0.jar mspp4-desktop/target/
+    - name: Copy JAR to mspp4-desktop
+      run: |
+         Copy-Item mspp4-core/target/mspp4-core-4.0.0.jar mspp4-desktop/target/
 
-      - name: Build mspp4-desktop
-        run: |
-          cd mspp4-desktop
-          mvn clean install
+    - name: Build mspp4-desktop
+      run: |
+        cd mspp4-desktop
+        mvn clean install
 
-      - name: Package with jpackage (Windows)
-        run: |
-          cd mspp4-desktop
-          jpackage \
-             --type exe \
-             --input target  \
-             --name Mass++.gold \
-             --main-jar mspp4-desktop-jar-with-dependencies.jar \
-             --main-class  ninja.mspp.MsppLauncher \
-             --java-options "-Xms1024m -Xmx4096m"
+    - name: Package with jpackage (Windows)
+      run: |
+        cd mspp4-desktop
+        jpackage \
+            --type exe \
+            --input target  \
+            --name Mass++.gold \
+            --main-jar mspp4-desktop-jar-with-dependencies.jar \
+            --main-class  ninja.mspp.MsppLauncher \
+            --java-options "-Xms1024m -Xmx4096m"
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: myapp-windows
-          path: mspp4-desktop/dist/*
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: myapp-windows
+        path: mspp4-desktop/dist/*
 
-  build-macos:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
+build-macos:
+  runs-on: macos-latest
+  steps:
+    - uses: actions/checkout@v4
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 21
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: 21
 
-      - name: Build mspp4-core
-        run: |
-          cd mspp4-core
-          mvn clean install
+    - name: Build mspp4-core
+      run: |
+        cd mspp4-core
+        mvn clean install
 
-      - name: Copy JAR to mspp4-desktop
-        run: |
-          cp mspp4-core/target/mspp4-core-4.0.0.jar mspp4-desktop/target/
+    - name: Copy JAR to mspp4-desktop
+      run: |
+        cp mspp4-core/target/mspp4-core-4.0.0.jar mspp4-desktop/target/
 
-      - name: Build mspp4-desktop
-        run: |
-          cd mspp4-desktop
-          mvn clean package
+    - name: Build mspp4-desktop
+      run: |
+        cd mspp4-desktop
+        mvn clean package
 
-      - name: Package with jpackage (macOS)
-        run: |
-          cd mspp4-desktop
-          jpackage \
-             --type dmg \
-             --input target  \
-             --name Mass++.gold \
-             --main-jar mspp4-desktop-jar-with-dependencies.jar \
-             --main-class  ninja.mspp.MsppLauncher \
-             --java-options "-Xms1024m -Xmx4096m"
+    - name: Package with jpackage (macOS)
+      run: |
+        cd mspp4-desktop
+        jpackage \
+            --type dmg \
+            --input target  \
+            --name Mass++.gold \
+            --main-jar mspp4-desktop-jar-with-dependencies.jar \
+            --main-class  ninja.mspp.MsppLauncher \
+            --java-options "-Xms1024m -Xmx4096m"
           
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: myapp-macos
-          path: mspp4-desktop/dist/*
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: myapp-macos
+        path: mspp4-desktop/dist/*
