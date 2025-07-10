@@ -51,6 +51,7 @@ jobs:
 
           build-ubutsu:
 
+build-ubutsu:
     runs-on: redhat-latest
     steps:
       - uses: actions/checkout@v4
