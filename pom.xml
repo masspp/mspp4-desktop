@@ -31,8 +31,12 @@
 			</snapshots>
 		</repository>
 		<repository>
-			<id>Expasy MzJava</id>
-			<url>http://mzjava.expasy.org/maven</url>
+			<id>github</id>
+			<url>https://maven.pkg.github.com/masspp/mzjava-proteomics</url>
+		</repository>
+		<repository>
+			<id>csvjdbc</id>
+			<url>https://csvjdbc.sourceforge.net/maven2/</url>
 		</repository>
 		<repository>
 			<id>GlycanMassUtility-gitlab-maven</id>
