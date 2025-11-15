@@ -31,16 +31,16 @@
 			</snapshots>
 		</repository>
 		<repository>
+			<id>github</id>
+			<url>https://maven.pkg.github.com/masspp/mzjava-proteomics</url>
+		</repository>
+		<repository>
 			<id>csvjdbc</id>
 			<url>https://csvjdbc.sourceforge.net/maven2/</url>
 		</repository>
 		<repository>
 			<id>GlycanMassUtility-gitlab-maven</id>
 			<url>https://gitlab.com/api/v4/projects/43695885/packages/maven</url>
-		</repository>
-		<repository>
-			<id>Expasy MzJava</id>
-			<url>http://mzjava.expasy.org/maven</url>
 		</repository>
 	</repositories>
 
