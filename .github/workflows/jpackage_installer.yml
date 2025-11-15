@@ -130,10 +130,10 @@ jobs:
     - name: Create installer with jpackage (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        $env:JAVA_HOME/bin/jpackage.exe `
-          --input ./target `
+        $env:JAVA_HOME\bin\jpackage.exe `
+          --input .\target `
           --name "MS++4" `
-          --main-jar (Get-ChildItem ./target/mspp4-desktop-jar-with-dependencies.jar | Select-Object -First 1).Name `
+          --main-jar (Get-ChildItem .\target\mspp4-desktop-jar-with-dependencies.jar | Select-Object -First 1).Name `
           --main-class ninja.mspp.MsppLauncher `
           --type ${{ matrix.installer-type }} `
           --dest installers `
