@@ -161,8 +161,7 @@ jobs:
           --app-version ${{ steps.version.outputs.VERSION }} \
           --vendor "MSPP4 Team" \
           --description "Mass Spectrometry Plus-Plus Platform 4" \
-          --copyright "Copyright © 2025 MS++4 Team" \
-          --mac-sign
+          --copyright "Copyright © 2025 MS++4 Team"
 
     - name: List created installers
       run: |
