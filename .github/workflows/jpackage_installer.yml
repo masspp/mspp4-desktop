@@ -116,7 +116,7 @@ jobs:
           --main-class ninja.mspp.MsppLauncher \
           --type ${{ matrix.installer-type }} \
           --dest installers \
-          --runtime-image runtime-image \
+          --runtime-image "jdk-${{ env.JAVA_VERSION }}+fx" \
           --app-version ${{ steps.version.outputs.VERSION }} \
           --vendor "MS++4 Team" \
           --description "Mass Spectrometry Plus-Plus Platform 4" \
@@ -134,7 +134,7 @@ jobs:
           --main-class ninja.mspp.MsppLauncher `
           --type ${{ matrix.installer-type }} `
           --dest installers `
-          --runtime-image runtime-image `
+          --runtime-image "jdk-${{ env.JAVA_VERSION }}+fx" `
           --app-version ${{ steps.version.outputs.VERSION }} `
           --vendor "MSPP4 Team" `
           --description "Mass Spectrometry Post-Processing Platform 4" `
@@ -154,7 +154,7 @@ jobs:
           --main-class ninja.mspp.MsppLauncher \
           --type ${{ matrix.installer-type }} \
           --dest installers \
-          --runtime-image runtime-image \
+          --runtime-image "jdk-${{ env.JAVA_VERSION }}+fx" \
           --app-version ${{ steps.version.outputs.VERSION }} \
           --vendor "MSPP4 Team" \
           --description "Mass Spectrometry Plus-Plus Platform 4" \
@@ -185,8 +185,7 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
-    # TODO: temporary
-    # if: startsWith(github.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/tags/')
     
     steps:
     - name: Download all artifacts
@@ -215,8 +214,7 @@ jobs:
   test-installers:
     needs: build
     runs-on: ${{ matrix.os }}
-    # TODO: temporary
-    # if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request'
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
