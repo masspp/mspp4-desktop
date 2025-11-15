@@ -65,39 +65,39 @@ jobs:
       working-directory: ./mspp4-core
       run: |
         if [ "$RUNNER_OS" == "Windows" ]; then
-          ./mvnw.cmd clean package -DskipTests
+          ./mvnw.cmd clean package install -DskipTests
         else
-          ./mvnw clean package -DskipTests
+          ./mvnw clean package install -DskipTests
         fi
       shell: bash
 
-    - name: Verify mspp4-core JAR exists
-      run: |
-        if [ "$RUNNER_OS" == "Windows" ]; then
-          ls -la mspp4-core/target/*.jar || echo "No JAR files found in mspp4-core/target"
-        else
-          ls -la mspp4-core/target/*.jar || echo "No JAR files found in mspp4-core/target"
-        fi
-      shell: bash
+    #- name: Verify mspp4-core JAR exists
+    #  run: |
+    #    if [ "$RUNNER_OS" == "Windows" ]; then
+    #      ls -la mspp4-core/target/*.jar || echo "No JAR files found in mspp4-core/target"
+    #    else
+    #      ls -la mspp4-core/target/*.jar || echo "No JAR files found in mspp4-core/target"
+    #    fi
+    #  shell: bash
 
-    - name: Create mspp-desktop lib directory
-      run: |
-        mkdir -p mspp-desktop/lib
-      shell: bash
+    #- name: Create mspp-desktop lib directory
+    #  run: |
+    #    mkdir -p mspp-desktop/lib
+    #  shell: bash
 
-    - name: Copy mspp4-core JAR to mspp-desktop
-      run: |
-        if [ "$RUNNER_OS" == "Windows" ]; then
-          cp mspp4-core/target/mspp4-core-*.jar mspp-desktop/lib/
-        else
-          cp mspp4-core/target/mspp4-core-*.jar mspp-desktop/lib/
-        fi
-      shell: bash
+    #- name: Copy mspp4-core JAR to mspp-desktop
+    #  run: |
+    #    if [ "$RUNNER_OS" == "Windows" ]; then
+    #      cp mspp4-core/target/mspp4-core-*.jar mspp-desktop/lib/
+    #    else
+    #      cp mspp4-core/target/mspp4-core-*.jar mspp-desktop/lib/
+    #    fi
+    #  shell: bash
 
-    - name: List copied JARs
-      run: |
-        ls -la mspp-desktop/lib/
-      shell: bash
+    #- name: List copied JARs
+    #  run: |
+    #    ls -la mspp-desktop/lib/
+    #  shell: bash
 
     - name: Generate settings.xml
       uses: s4u/maven-settings-action@v4.0.0
