@@ -116,7 +116,7 @@ jobs:
           --main-class ninja.mspp.MsppLauncher \
           --type ${{ matrix.installer-type }} \
           --dest installers \
-          --runtime-image "jdk-${{ env.JAVA_VERSION }}+fx" \
+          --runtime-image "jdk-${{ env.JAVA_VERSION }}+javafx-${{ env.JAVA_VERSION }}" \
           --app-version ${{ steps.version.outputs.VERSION }} \
           --vendor "MS++4 Team" \
           --description "Mass Spectrometry Plus-Plus Platform 4" \
@@ -134,7 +134,7 @@ jobs:
           --main-class ninja.mspp.MsppLauncher `
           --type ${{ matrix.installer-type }} `
           --dest installers `
-          --runtime-image "jdk-${{ env.JAVA_VERSION }}+fx" `
+          --runtime-image "jdk-${{ env.JAVA_VERSION }}+javafx-${{ env.JAVA_VERSION }}" `
           --app-version ${{ steps.version.outputs.VERSION }} `
           --vendor "MSPP4 Team" `
           --description "Mass Spectrometry Post-Processing Platform 4" `
@@ -154,7 +154,7 @@ jobs:
           --main-class ninja.mspp.MsppLauncher \
           --type ${{ matrix.installer-type }} \
           --dest installers \
-          --runtime-image "jdk-${{ env.JAVA_VERSION }}+fx" \
+          --runtime-image "jdk-${{ env.JAVA_VERSION }}+javafx-${{ env.JAVA_VERSION }}" \
           --app-version ${{ steps.version.outputs.VERSION }} \
           --vendor "MSPP4 Team" \
           --description "Mass Spectrometry Plus-Plus Platform 4" \
