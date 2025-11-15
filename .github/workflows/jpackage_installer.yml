@@ -10,7 +10,7 @@ on:
 
 env:
   JAVA_VERSION: '21'
-  JAVA_DISTRIBUTION: 'temurin'
+  JAVA_DISTRIBUTION: 'zulu'
 
 jobs:
   build:
