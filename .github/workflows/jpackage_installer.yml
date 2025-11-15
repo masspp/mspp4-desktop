@@ -115,7 +115,7 @@ jobs:
         $JAVA_HOME/bin/jpackage \
           --input ./target \
           --name "MS++4" \
-          --main-jar mspp4-desktop-*.jar \
+          --main-jar mspp4-desktop-jar-with-dependencies.jar \
           --main-class ninja.mspp.MsppLauncher \
           --type ${{ matrix.installer-type }} \
           --dest installers \
@@ -133,7 +133,7 @@ jobs:
         $env:JAVA_HOME/bin/jpackage.exe `
           --input ./target `
           --name "MS++4" `
-          --main-jar (Get-ChildItem ./target/mspp4-desktop-*.jar | Select-Object -First 1).Name `
+          --main-jar (Get-ChildItem ./target/mspp4-desktop-jar-with-dependencies.jar | Select-Object -First 1).Name `
           --main-class ninja.mspp.MsppLauncher `
           --type ${{ matrix.installer-type }} `
           --dest installers `
@@ -153,7 +153,7 @@ jobs:
         $JAVA_HOME/bin/jpackage \
           --input ./target \
           --name "MSPP4" \
-          --main-jar $(ls ./target/mspp4-desktop-*.jar | head -1 | xargs basename) \
+          --main-jar $(ls ./target/mspp4-desktop-jar-with-dependencies.jar | head -1 | xargs basename) \
           --main-class ninja.mspp.MsppLauncher \
           --type ${{ matrix.installer-type }} \
           --dest installers \
