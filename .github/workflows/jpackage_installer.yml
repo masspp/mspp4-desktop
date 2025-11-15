@@ -106,7 +106,6 @@ jobs:
           [{ "id": "github", "username": "masspp", "password": "${{ secrets.GITHUB_TOKEN }}" }]
 
     - name: Build mspp-desktop
-      working-directory: ./mspp-desktop
       run: |
         if [ "$RUNNER_OS" == "Windows" ]; then
           ../mvnw.cmd clean package -DskipTests
