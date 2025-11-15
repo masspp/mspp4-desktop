@@ -65,9 +65,9 @@ jobs:
       working-directory: ./mspp4-core
       run: |
         if [ "$RUNNER_OS" == "Windows" ]; then
-          ../mvnw.cmd clean package -DskipTests
+          ./mvnw.cmd clean package -DskipTests
         else
-          ../mvnw clean package -DskipTests
+          ./mvnw clean package -DskipTests
         fi
       shell: bash
 
@@ -108,9 +108,9 @@ jobs:
     - name: Build mspp-desktop
       run: |
         if [ "$RUNNER_OS" == "Windows" ]; then
-          ../mvnw.cmd clean package -DskipTests
+          ./mvnw.cmd clean package -DskipTests
         else
-          ../mvnw clean package -DskipTests
+          ./mvnw clean package -DskipTests
         fi
       shell: bash
 
