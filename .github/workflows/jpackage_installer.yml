@@ -80,9 +80,9 @@ jobs:
     - name: Build mspp-desktop
       run: |
         if [ "$RUNNER_OS" == "Windows" ]; then
-          ./mvnw.cmd clean package -DskipTests
+          ./mvnw.cmd clean license:third-party-report package -DskipTests
         else
-          ./mvnw clean package -DskipTests
+          ./mvnw clean license:third-party-report package -DskipTests
         fi
       shell: bash
 
@@ -112,11 +112,10 @@ jobs:
     - name: Create installer with jpackage (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: |
-        echo $PWD
         $JAVA_HOME/bin/jpackage \
           --input ./target \
           --name "MS++4" \
-          --main-jar mspp-desktop-*.jar \
+          --main-jar mspp4-desktop-*.jar \
           --main-class ninja.mspp.MsppLauncher \
           --type ${{ matrix.installer-type }} \
           --dest installers \
@@ -134,7 +133,7 @@ jobs:
         $env:JAVA_HOME/bin/jpackage.exe `
           --input ./target `
           --name "MS++4" `
-          --main-jar (Get-ChildItem ./target/mspp-desktop-*.jar | Select-Object -First 1).Name `
+          --main-jar (Get-ChildItem ./target/mspp4-desktop-*.jar | Select-Object -First 1).Name `
           --main-class ninja.mspp.MsppLauncher `
           --type ${{ matrix.installer-type }} `
           --dest installers `
@@ -151,11 +150,10 @@ jobs:
     - name: Create installer with jpackage (macOS)
       if: matrix.os == 'macos-latest'
       run: |
-        echo $PWD
         $JAVA_HOME/bin/jpackage \
           --input ./target \
           --name "MSPP4" \
-          --main-jar $(ls ./target/mspp-desktop-*.jar | head -1 | xargs basename) \
+          --main-jar $(ls ./target/mspp4-desktop-*.jar | head -1 | xargs basename) \
           --main-class ninja.mspp.MsppLauncher \
           --type ${{ matrix.installer-type }} \
           --dest installers \
