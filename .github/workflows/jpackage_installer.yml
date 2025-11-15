@@ -112,6 +112,7 @@ jobs:
     - name: Create installer with jpackage (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: |
+        echo $PWD
         $JAVA_HOME/bin/jpackage \
           --input ./target \
           --name "MS++4" \
@@ -150,6 +151,7 @@ jobs:
     - name: Create installer with jpackage (macOS)
       if: matrix.os == 'macos-latest'
       run: |
+        echo $PWD
         $JAVA_HOME/bin/jpackage \
           --input ./target \
           --name "MSPP4" \
