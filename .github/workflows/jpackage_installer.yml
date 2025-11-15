@@ -71,34 +71,6 @@ jobs:
         fi
       shell: bash
 
-    #- name: Verify mspp4-core JAR exists
-    #  run: |
-    #    if [ "$RUNNER_OS" == "Windows" ]; then
-    #      ls -la mspp4-core/target/*.jar || echo "No JAR files found in mspp4-core/target"
-    #    else
-    #      ls -la mspp4-core/target/*.jar || echo "No JAR files found in mspp4-core/target"
-    #    fi
-    #  shell: bash
-
-    #- name: Create mspp-desktop lib directory
-    #  run: |
-    #    mkdir -p mspp-desktop/lib
-    #  shell: bash
-
-    #- name: Copy mspp4-core JAR to mspp-desktop
-    #  run: |
-    #    if [ "$RUNNER_OS" == "Windows" ]; then
-    #      cp mspp4-core/target/mspp4-core-*.jar mspp-desktop/lib/
-    #    else
-    #      cp mspp4-core/target/mspp4-core-*.jar mspp-desktop/lib/
-    #    fi
-    #  shell: bash
-
-    #- name: List copied JARs
-    #  run: |
-    #    ls -la mspp-desktop/lib/
-    #  shell: bash
-
     - name: Generate settings.xml
       uses: s4u/maven-settings-action@v4.0.0
       with:
@@ -141,7 +113,7 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         $JAVA_HOME/bin/jpackage \
-          --input mspp-desktop/target \
+          --input ./target \
           --name "MS++4" \
           --main-jar mspp-desktop-*.jar \
           --main-class ninja.mspp.MsppLauncher \
@@ -159,9 +131,9 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
         $env:JAVA_HOME/bin/jpackage.exe `
-          --input mspp-desktop/target `
+          --input ./target `
           --name "MS++4" `
-          --main-jar (Get-ChildItem mspp-desktop/target/mspp-desktop-*.jar | Select-Object -First 1).Name `
+          --main-jar (Get-ChildItem ./target/mspp-desktop-*.jar | Select-Object -First 1).Name `
           --main-class ninja.mspp.MsppLauncher `
           --type ${{ matrix.installer-type }} `
           --dest installers `
@@ -179,9 +151,9 @@ jobs:
       if: matrix.os == 'macos-latest'
       run: |
         $JAVA_HOME/bin/jpackage \
-          --input mspp-desktop/target \
+          --input ./target \
           --name "MSPP4" \
-          --main-jar $(ls mspp-desktop/target/mspp-desktop-*.jar | head -1 | xargs basename) \
+          --main-jar $(ls ./target/mspp-desktop-*.jar | head -1 | xargs basename) \
           --main-class ninja.mspp.MsppLauncher \
           --type ${{ matrix.installer-type }} \
           --dest installers \
