@@ -17,14 +17,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, redhat-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         include:
           - os: ubuntu-latest
             platform: linux
             installer-type: deb
-          - os: redhat-latest
-            platform: linux
-            installer-type: rpm
           - os: windows-latest
             platform: windows
             installer-type: msi
