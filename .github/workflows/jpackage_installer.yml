@@ -51,6 +51,12 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
 
+    - name: Checkout mspp4-core repository
+      uses: actions/checkout@v4
+      with:
+        repository: masspp/mspp4-core
+        path: mspp4-core
+
     - name: Set execute permissions for Maven wrapper (Unix)
       if: runner.os != 'Windows'
       run: chmod +x ./mvnw
