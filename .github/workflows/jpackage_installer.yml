@@ -185,7 +185,8 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
+    # TODO: temporary
+    # if: startsWith(github.ref, 'refs/tags/')
     
     steps:
     - name: Download all artifacts
@@ -214,7 +215,8 @@ jobs:
   test-installers:
     needs: build
     runs-on: ${{ matrix.os }}
-    if: github.event_name == 'pull_request'
+    # TODO: temporary
+    # if: github.event_name == 'pull_request'
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
