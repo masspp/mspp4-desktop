@@ -38,8 +38,8 @@ jobs:
         distribution: ${{ env.JAVA_DISTRIBUTION }}
         java-package: jdk+fx
         server-id: github
-        server-username: ${{ env.GITHUB_ACTOR }}
-        server-password: ${{ env.GITHUB_TOKEN }}
+        server-username: GITHUB_ACTOR
+        server-password: GITHUB_TOKEN
 
     - name: Cache Maven dependencies
       uses: actions/cache@v3
