@@ -68,6 +68,7 @@ jobs:
         cat ~/.m2/settings.xml
         echo $MAVEN_ACTOR
         echo $MAVEN_PAT
+        ls -l .mvn
         ./mvnw clean license:third-party-report package -DskipTests
       shell: bash
 
