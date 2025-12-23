@@ -11,8 +11,8 @@ on:
 env:
   JAVA_VERSION: '21'
   JAVA_DISTRIBUTION: 'zulu'
-  MAVEN_ACTOR: ${{ secrets.MAVEN_ACTOR }}
-  MAVEN_PAT: ${{ secrets.MAVEN_PAT }}
+  GITHUB_ACTOR: github.actor
+  GITHUB_TOKEN: secrets.GITHUB_TOKEN
 
 jobs:
   build-rpm:
@@ -38,8 +38,8 @@ jobs:
         distribution: ${{ env.JAVA_DISTRIBUTION }}
         java-package: jdk+fx
         server-id: github
-        server-username: MAVEN_ACTOR
-        server-password: MAVEN_PAT
+        server-username: GITHUB_ACTOR
+        server-password: GITHUB_TOKEN
 
     - name: Cache Maven dependencies
       uses: actions/cache@v3
@@ -66,12 +66,9 @@ jobs:
     - name: Build mspp-desktop
       run: |
         cat ~/.m2/settings.xml
-        echo $MAVEN_ACTOR
-        echo $MAVEN_PAT
-        ls -l .mvn
-        pwd
-        echo $HOME
-        ./mvnw --settings=$HOME/.m2/settings.xml -X clean license:third-party-report package -DskipTests
+        echo $GITHUB_ACTOR
+        echo $GITHUB_TOKEN
+        ./mvnw --settings=$HOME/.m2/settings.xml clean license:third-party-report package -DskipTests
       shell: bash
 
     - name: Set up application version
@@ -97,7 +94,7 @@ jobs:
           --no-man-pages
       shell: bash
 
-    - name: Create installer with jpackage (Linux)
+    - name: Create installer with jpackage
       run: |
         $JAVA_HOME/bin/jpackage \
           --input ./target \
@@ -122,7 +119,7 @@ jobs:
     - name: Upload installer artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: mspp4-installer-linux
+        name: mspp4-installer-linux-rpm
         path: installers/*
         retention-days: 30
 
@@ -130,7 +127,7 @@ jobs:
       if: failure()
       uses: actions/upload-artifact@v4
       with:
-        name: build-logs-linux
+        name: build-logs-linux-rpm
         path: |
           mspp4-core/target/surefire-reports/
           mspp-desktop/target/surefire-reports/
