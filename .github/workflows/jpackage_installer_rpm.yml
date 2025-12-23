@@ -71,7 +71,7 @@ jobs:
         ls -l .mvn
         pwd
         echo $HOME
-        ./mvnw -X clean license:third-party-report package -DskipTests
+        ./mvnw --settings=$HOME/.m2/settings.xml -X clean license:third-party-report package -DskipTests
       shell: bash
 
     - name: Set up application version
