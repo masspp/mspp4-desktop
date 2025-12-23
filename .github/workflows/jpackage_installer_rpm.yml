@@ -19,7 +19,6 @@ jobs:
     container:
       image: almalinux:9
       env:
-        GITHUB_ACTOR: ${{ github.actor }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
@@ -65,7 +64,7 @@ jobs:
       uses: s4u/maven-settings-action@v4.0.0
       with:
         servers: |
-          [{ "id": "github", "username": "masspp", "password": "${{ secrets.GITHUB_TOKEN }}" }]
+          [{ "id": "github", "username": "masspp", "password": "${{ env.GITHUB_TOKEN }}" }]
 
     - name: Build mspp-desktop
       run: |
