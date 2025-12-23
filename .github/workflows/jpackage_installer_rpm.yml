@@ -69,6 +69,7 @@ jobs:
         echo $MAVEN_ACTOR
         echo $MAVEN_PAT
         ls -l .mvn
+        pwd
         ./mvnw -X clean license:third-party-report package -DskipTests
       shell: bash
 
