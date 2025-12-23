@@ -45,8 +45,8 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.m2
-        key: almalinux9-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: almalinux9-m2
+        key: almalinux_9-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: almalinux_9-m2
 
     - name: Checkout mspp4-core repository
       uses: actions/checkout@v4
