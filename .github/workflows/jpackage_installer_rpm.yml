@@ -19,6 +19,7 @@ jobs:
     container:
       image: almalinux:9
       env:
+        GITHUB_ACTOR: masspp
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
@@ -69,6 +70,8 @@ jobs:
     - name: Build mspp-desktop
       run: |
         cat ~/.m2/settings.xml
+        echo ${{ env.GITHUB_ACTOR }}
+        echo ${{ env.GITHUB_TOKEN }}
         ./mvnw clean license:third-party-report package -DskipTests
       shell: bash
 
