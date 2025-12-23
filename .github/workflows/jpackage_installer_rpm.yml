@@ -68,6 +68,7 @@ jobs:
 
     - name: Build mspp-desktop
       run: |
+        cat ~/.m2/settings.xml
         ./mvnw clean license:third-party-report package -DskipTests
       shell: bash
 
