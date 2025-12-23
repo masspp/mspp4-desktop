@@ -60,11 +60,11 @@ jobs:
         ./mvnw clean package install -DskipTests
       shell: bash
 
-    - name: Generate settings.xml
-      uses: s4u/maven-settings-action@v4.0.0
-      with:
-        servers: |
-          [{ "id": "github", "username": "masspp", "password": "${{ env.GITHUB_TOKEN }}" }]
+    #- name: Generate settings.xml
+    #  uses: s4u/maven-settings-action@v4.0.0
+    #  with:
+    #    servers: |
+    #      [{ "id": "github", "username": "masspp", "password": "${{ env.GITHUB_TOKEN }}" }]
 
     - name: Build mspp-desktop
       run: |
