@@ -12,7 +12,7 @@ env:
   JAVA_VERSION: '21'
   JAVA_DISTRIBUTION: 'zulu'
   GITHUB_ACTOR: github.actor
-  GITHUB_TOKEN: secrets.GITHUB_TOKEN
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   build-rpm:
