@@ -11,6 +11,8 @@ on:
 env:
   JAVA_VERSION: '21'
   JAVA_DISTRIBUTION: 'zulu'
+  GITHUB_ACTOR: 'masspp'
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   build-rpm:
@@ -18,9 +20,6 @@ jobs:
 
     container:
       image: almalinux:9
-      env:
-        GITHUB_ACTOR: masspp
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
     - name: Checkout repository
