@@ -74,6 +74,20 @@ jobs:
 
     - name: Build mspp-desktop
       run: |
+        cat > ~/.m2/settings.xml <<EOF
+        <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                                      http://maven.apache.org/xsd/settings-1.0.0.xsd">
+          <servers>
+            <server>
+              <id>github</id>
+              <username>$GITHUB_ACTOR</username>
+              <password>$GITHUB_TOKEN</password>
+            </server>
+          </servers>
+        </settings>
+        EOF
         cat ~/.m2/settings.xml
         echo "GITHUB_ACTOR (shell): $GITHUB_ACTOR"
         echo "GITHUB_TOKEN (shell): ${GITHUB_TOKEN:0:10}..."
