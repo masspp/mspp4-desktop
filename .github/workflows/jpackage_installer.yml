@@ -11,6 +11,8 @@ on:
 env:
   JAVA_VERSION: '21'
   JAVA_DISTRIBUTION: 'zulu'
+  GITHUB_ACTOR: github.actor
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   build:
@@ -41,13 +43,16 @@ jobs:
         java-version: ${{ env.JAVA_VERSION }}
         distribution: ${{ env.JAVA_DISTRIBUTION }}
         java-package: jdk+fx
+        server-id: github
+        server-username: GITHUB_ACTOR
+        server-password: GITHUB_TOKEN
 
     - name: Cache Maven dependencies
       uses: actions/cache@v3
       with:
         path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2
+        key: ${{ runner.os }}_m2_${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}_m2
 
     - name: Checkout mspp4-core repository
       uses: actions/checkout@v4
@@ -68,12 +73,6 @@ jobs:
           ./mvnw clean package install -DskipTests
         fi
       shell: bash
-
-    - name: Generate settings.xml
-      uses: s4u/maven-settings-action@v4.0.0
-      with:
-        servers: |
-          [{ "id": "github", "username": "masspp", "password": "${{ secrets.GITHUB_TOKEN }}" }]
 
     - name: Build mspp-desktop
       run: |
