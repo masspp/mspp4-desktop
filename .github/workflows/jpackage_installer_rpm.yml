@@ -11,15 +11,12 @@ on:
 env:
   JAVA_VERSION: '21'
   JAVA_DISTRIBUTION: 'zulu'
-  GITHUB_ACTOR: ${{ github.actor }}
-  GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+  MAVEN_ACTOR: ${{ secrets.MAVEN_ACTOR }}
+  MAVEN_PAT: ${{ secrets_MAVEN_PAT }}
 
 jobs:
   build-rpm:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: read
 
     container:
       image: almalinux:9
@@ -40,9 +37,9 @@ jobs:
         java-version: ${{ env.JAVA_VERSION }}
         distribution: ${{ env.JAVA_DISTRIBUTION }}
         java-package: jdk+fx
-        #server-id: github
-        #server-username: GITHUB_ACTOR
-        #server-password: GITHUB_TOKEN
+        server-id: github
+        server-username: MAVEN_ACTOR
+        server-password: MAVEN_PAT
 
     - name: Cache Maven dependencies
       uses: actions/cache@v3
@@ -66,31 +63,11 @@ jobs:
         ./mvnw clean package install -DskipTests
       shell: bash
 
-    - name: Generate settings.xml
-      uses: s4u/maven-settings-action@v4.0.0
-      with:
-        servers: |
-          [{ "id": "github", "username": "${{ github.actor }}", "password": "${{ secrets.GITHUB_TOKEN }}" }]
-
     - name: Build mspp-desktop
       run: |
-        cat > ~/.m2/settings.xml <<EOF
-        <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
-                                      http://maven.apache.org/xsd/settings-1.0.0.xsd">
-          <servers>
-            <server>
-              <id>github</id>
-              <username>$GITHUB_ACTOR</username>
-              <password>$GITHUB_TOKEN</password>
-            </server>
-          </servers>
-        </settings>
-        EOF
         cat ~/.m2/settings.xml
-        echo "GITHUB_ACTOR (shell): $GITHUB_ACTOR"
-        echo "GITHUB_TOKEN (shell): ${GITHUB_TOKEN:0:10}..."
+        echo $MAVEN_ACTOR
+        echo $MAVEN_PAT
         ./mvnw clean license:third-party-report package -DskipTests
       shell: bash
 
