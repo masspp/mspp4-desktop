@@ -66,8 +66,8 @@ jobs:
     - name: Build mspp-desktop
       run: |
         cat ~/.m2/settings.xml
-        echo ${{ env.GITHUB_ACTOR }}
-        echo ${{ env.GITHUB_TOKEN }}
+        echo "GITHUB_ACTOR (shell): $GITHUB_ACTOR"
+        echo "GITHUB_TOKEN (shell): ${GITHUB_TOKEN:0:10}..."
         ./mvnw clean license:third-party-report package -DskipTests
       shell: bash
 
