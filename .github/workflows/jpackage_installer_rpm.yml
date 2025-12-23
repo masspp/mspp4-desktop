@@ -70,6 +70,7 @@ jobs:
         echo $MAVEN_PAT
         ls -l .mvn
         pwd
+        echo $HOME
         ./mvnw -X clean license:third-party-report package -DskipTests
       shell: bash
 
