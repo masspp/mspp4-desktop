@@ -12,7 +12,7 @@ env:
   JAVA_VERSION: '21'
   JAVA_DISTRIBUTION: 'zulu'
   MAVEN_ACTOR: ${{ secrets.MAVEN_ACTOR }}
-  MAVEN_PAT: ${{ secrets_MAVEN_PAT }}
+  MAVEN_PAT: ${{ secrets.MAVEN_PAT }}
 
 jobs:
   build-rpm:
