@@ -1,4 +1,4 @@
-name: Build MSPP4 and Create Installer for RedHat distros
+name: Build MSPP4 and Create Installer (rpm)
 
 on:
   push:
@@ -18,6 +18,9 @@ jobs:
 
     container:
       image: almalinux:9
+      env:
+        GITHUB_ACTOR: ${{ github.actor }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
     - name: Checkout repository
