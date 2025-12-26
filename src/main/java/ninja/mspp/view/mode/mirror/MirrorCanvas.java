@@ -50,12 +50,12 @@ public class MirrorCanvas extends ProfileCanvas {
 		double end = Double.NaN;
 		
 		if (this.xRanges.isEmpty()) {
-			if(this.points != null) {
+			if(this.points != null && !this.points.isEmpty()) {
 				start = this.points.getFirst().getX();
 				end = this.points.getLast().getX();
 			}
 			
-			if(this.points2 != null) {
+			if(this.points2 != null && !this.points2.isEmpty()) {
 				double start2 = this.points2.getFirst().getX();
 	            double end2 = this.points2.getLast().getX();
 				if(Double.isNaN(start) || start2 < start) {
