@@ -148,7 +148,7 @@ jobs:
       shell: powershell
 
     - name: Create installer with jpackage (macOS)
-      if: matrix.os == 'macos-latest'
+      if: matrix.os == 'macos-latest' || matrix.os == 'macos-15-intel'
       run: |
         $JAVA_HOME/bin/jpackage \
           --input ./target \
