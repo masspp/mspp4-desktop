@@ -122,6 +122,12 @@ jobs:
         ls -la installers/
       shell: bash
 
+    - name: Rename created installer
+      run: |
+        fname=*.rpm
+        mv -- "$fname" "${fname%.rpm}.${{ matrix.distro }}.rpm"
+      shell: bash
+
     - name: Upload installer artifacts
       uses: actions/upload-artifact@v4
       with:
