@@ -20,9 +20,10 @@ jobs:
 
     strategy:
       matrix:
-        container:
-          - almalinux:9
-          - almalinux:10
+        container: [almalinux:9, almalinux:10]
+        include:
+          - os: alma9
+          - os: alma10
 
     container:
       image: ${{ matrix.container }}
@@ -123,7 +124,7 @@ jobs:
     - name: Upload installer artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: mspp4-installer-linux-rpm
+        name: mspp4-installer-linux-rpm-${{ matrix.os }}
         path: installers/*
         retention-days: 30
 
@@ -131,7 +132,7 @@ jobs:
       if: failure()
       uses: actions/upload-artifact@v4
       with:
-        name: build-logs-linux-rpm
+        name: build-logs-linux-rpm-${{ matrix.os }}
         path: |
           mspp4-core/target/surefire-reports/
           mspp-desktop/target/surefire-reports/
