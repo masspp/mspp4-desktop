@@ -20,7 +20,6 @@ jobs:
 
     strategy:
       matrix:
-        container: [almalinux:9, almalinux:10]
         include:
           - container: almalinux:9
             distro: alma9
@@ -54,8 +53,8 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.m2
-        key: almalinux9_m2_${{ hashFiles('**/pom.xml') }}
-        restore-keys: almalinux9_m2
+        key: ${{ matrix.distro }}_m2_${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ matrix.distro }}_m2
 
     - name: Checkout mspp4-core repository
       uses: actions/checkout@v4
