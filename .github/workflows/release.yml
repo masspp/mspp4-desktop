@@ -13,6 +13,32 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    - name: Find installer build run
+      id: installer
+      run: |
+        RUN_ID=$(gh api repos/${{ github.repository }}/actions/workflows/jpackage_installer.yml/runs \
+          -f status=completed -f conclusion=success -q '.workflow_runs[0].id')
+        echo "installer_run_id=$RUN_ID" >> $GITHUB_OUTPUT
+
+    - name: Download installer artifacts
+      uses: actions/download-artifact@v8
+      with:
+        name: artifacts
+        run-id: ${{ steps.installer.outputs.installer_run_id }}
+
+    - name: Find installer(rpm) build run
+      id: installer-rpm
+      run: |
+        RUN_ID=$(gh api repos/${{ github.repository }}/actions/workflows/jpackage_installer_rpm.yml/runs \
+          -f status=completed -f conclusion=success -q '.workflow_runs[0].id')
+        echo "installer_rpm_run_id=$RUN_ID" >> $GITHUB_OUTPUT
+
+    - name: Download installer(rpm) artifacts
+      uses: actions/download-artifact@v8
+      with:
+        name: artifacts
+        run-id: ${{ steps.installer-rpm.outputs.installer_rpm_run_id }}
+
     - name: Download all artifacts
       uses: actions/download-artifact@v8
       with:
