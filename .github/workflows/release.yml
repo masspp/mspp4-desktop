@@ -42,12 +42,7 @@ jobs:
           # ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
           generate_release_notes: true
           files: |
-            artifacts/mspp4-installer-windows/*
-            artifacts/mspp4-installer-macos/*
-            artifacts/mspp4-installer-macos-intel/*
-            artifacts/mspp4-installer-linux-debian/*
-            artifacts/mspp4-installer-linux-rpm-alma9/*
-            artifacts/mspp4-installer-linux-rpm-alma10/*
+            artifacts/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
