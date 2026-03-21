@@ -24,15 +24,19 @@ jobs:
           - os: ubuntu-latest
             platform: linux-debian
             installer-type: deb
+            icon-path: ./src/main/resources/ninja/mspp/images/icon/MS_icon_256.png
           - os: windows-latest
             platform: windows
             installer-type: msi
+            icon-path: .\src\main\resources\ninja\mspp\images\icon\mspp4.ico
           - os: macos-latest
             platform: macos
             installer-type: dmg
+            icon-path: ./src/main/resources/ninja/mspp/images/icon/mspp4.icns
           - os: macos-15-intel
             platform: macos-intel
             installer-type: dmg
+            icon-path: ./src/main/resources/ninja/mspp/images/icon/mspp4.icns
 
     steps:
     - name: Checkout repository
@@ -117,6 +121,7 @@ jobs:
           --name "MS++4" \
           --main-jar mspp4-desktop-jar-with-dependencies.jar \
           --main-class ninja.mspp.MsppLauncher \
+          --icon ${{ matrix.icon-path }} \
           --type ${{ matrix.installer-type }} \
           --dest installers \
           --runtime-image runtime-image \
@@ -135,6 +140,7 @@ jobs:
           --name "MS++4" `
           --main-jar (Get-ChildItem .\target\mspp4-desktop-jar-with-dependencies.jar | Select-Object -First 1).Name `
           --main-class ninja.mspp.MsppLauncher `
+          --icon ${{ matrix.icon-path }} `
           --type ${{ matrix.installer-type }} `
           --dest installers `
           --runtime-image runtime-image `
@@ -155,6 +161,7 @@ jobs:
           --name "MSPP4" \
           --main-jar $(ls ./target/mspp4-desktop-jar-with-dependencies.jar | head -1 | xargs basename) \
           --main-class ninja.mspp.MsppLauncher \
+          --icon ${{ matrix.icon-path }} \
           --type ${{ matrix.installer-type }} \
           --dest installers \
           --runtime-image runtime-image \
