@@ -45,7 +45,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up JDK ${{ env.JAVA_VERSION }}
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         java-version: ${{ env.JAVA_VERSION }}
         distribution: ${{ env.JAVA_DISTRIBUTION }}
@@ -192,85 +192,3 @@ jobs:
           mspp-desktop/target/surefire-reports/
         retention-days: 7
 
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
-    
-    steps:
-    - name: Download all artifacts
-      uses: actions/download-artifact@v4
-      with:
-        path: artifacts
-
-    - name: List downloaded artifacts
-      run: |
-        find artifacts -type f -name "*" | sort
-
-    - name: Create Release
-      uses: softprops/action-gh-release@v1
-      with:
-        name: Release ${{ github.ref_name }}
-        draft: false
-        prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
-        generate_release_notes: true
-        files: |
-          artifacts/mspp4-installer-linux-debian/*
-          artifacts/mspp4-installer-windows/*
-          artifacts/mspp4-installer-macos/*
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  test-installers:
-    needs: build
-    runs-on: ${{ matrix.os }}
-    if: github.event_name == 'pull_request'
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        include:
-          - os: ubuntu-latest
-            platform: linux-debian
-          - os: windows-latest
-            platform: windows
-          - os: macos-latest
-            platform: macos
-
-    steps:
-    - name: Download installer
-      uses: actions/download-artifact@v4
-      with:
-        name: mspp4-installer-${{ matrix.platform }}
-        path: installer
-
-    - name: Test installer (Linux)
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        ls -la installer/
-        # DEB パッケージの検証
-        if [ -f installer/*.deb ]; then
-          dpkg --info installer/*.deb
-          echo "DEB package created successfully"
-        fi
-
-    - name: Test installer (Windows)
-      if: matrix.os == 'windows-latest'
-      run: |
-        Get-ChildItem installer/
-        # MSI パッケージの検証
-        $msiFile = Get-ChildItem installer/*.msi -ErrorAction SilentlyContinue
-        if ($msiFile) {
-          Write-Output "MSI package created successfully: $($msiFile.Name)"
-          Write-Output "File size: $([math]::Round($msiFile.Length / 1MB, 2)) MB"
-        }
-      shell: powershell
-
-    - name: Test installer (macOS)
-      if: matrix.os == 'macos-latest'
-      run: |
-        ls -la installer/
-        # DMG パッケージの検証
-        if [ -f installer/*.dmg ]; then
-          hdiutil imageinfo installer/*.dmg
-          echo "DMG package created successfully"
-        fi
