@@ -117,15 +117,16 @@ jobs:
           --linux-shortcut \
           --linux-menu-group "Science"
 
+    - name: Rename created installer
+      run: |
+        cd installer
+        fname=*.x86_64.rpm
+        mv -- "$fname" "${fname%.x86_64.rpm}.${{ matrix.distro }}.x86_64.rpm"
+      shell: bash
+
     - name: List created installers
       run: |
         ls -la installers/
-      shell: bash
-
-    - name: Rename created installer
-      run: |
-        fname=*.rpm
-        mv -- "$fname" "${fname%.rpm}.${{ matrix.distro }}.rpm"
       shell: bash
 
     - name: Upload installer artifacts

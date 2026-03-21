@@ -170,6 +170,14 @@ jobs:
           --description "Mass Spectrometry Plus-Plus Platform 4" \
           --copyright "Copyright © 2025 MS++4 Team"
 
+    - name: Rename created installer
+      if: matrix.os == 'macos-latest' || matrix.os == 'macos-15-intel'
+      run: |
+        cd installer
+        fname=*.dmg
+        mv -- "$fname" "${fname%.dmg}.${{ runner.arch }}.dmg"
+      shell: bash
+
     - name: List created installers
       run: |
         ls -la installers/
