@@ -173,7 +173,7 @@ jobs:
     - name: Rename created installer
       if: matrix.os == 'macos-latest' || matrix.os == 'macos-15-intel'
       run: |
-        cd installer
+        cd installers
         fname=(*.dmg)
         mv -- "$fname" "${fname%.dmg}.${{ runner.arch }}.dmg"
       shell: bash

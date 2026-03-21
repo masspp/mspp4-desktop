@@ -119,7 +119,7 @@ jobs:
 
     - name: Rename created installer
       run: |
-        cd installer
+        cd installers
         fname=(*.x86_64.rpm)
         mv -- "$fname" "${fname%.x86_64.rpm}.${{ matrix.distro }}.x86_64.rpm"
       shell: bash
