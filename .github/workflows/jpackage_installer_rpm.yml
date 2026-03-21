@@ -98,6 +98,7 @@ jobs:
           --name "MS++4" \
           --main-jar mspp4-desktop-jar-with-dependencies.jar \
           --main-class ninja.mspp.MsppLauncher \
+          --icon ./src/main/resources/ninja/mspp/images/icon/MS_icon_256.png \
           --type rpm \
           --dest installers \
           --runtime-image runtime-image \
