@@ -12,60 +12,48 @@ env:
   GH_TOKEN: ${{ github.token }}
 
 jobs:
+  build-installer:
+    uses: ./.github/workflows/jpackage_installer.yml
+
+  build-installer-rpm:
+    uses: ./.github/workflows/jpackage_installer_rpm.yml
+
   release:
+    needs: [build-installer, build-installer-rpm]
     runs-on: ubuntu-latest
     
     steps:
-    - name: Find installer build run
-      id: installer
-      run: |
-        RUN_ID=$(gh api repos/${{ github.repository }}/actions/workflows/jpackage_installer.yml/runs \
-          -f status=completed -f conclusion=success -q '.workflow_runs[0].id')
-        echo "installer_run_id=$RUN_ID" >> $GITHUB_OUTPUT
+      - name: Download installer artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: mspp4-installer-*
+          path: artifacts
 
-    - name: Download installer artifacts
-      uses: actions/download-artifact@v8
-      with:
-        name: artifacts
-        run-id: ${{ steps.installer.outputs.installer_run_id }}
+      - name: Download installer(rpm) artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: mspp4-installer-*
+          path: artifacts
+      
+      - name: List downloaded artifacts
+        run: |
+          find artifacts -type f -name "*" | sort
 
-    - name: Find installer(rpm) build run
-      id: installer-rpm
-      run: |
-        RUN_ID=$(gh api repos/${{ github.repository }}/actions/workflows/jpackage_installer_rpm.yml/runs \
-          -f status=completed -f conclusion=success -q '.workflow_runs[0].id')
-        echo "installer_rpm_run_id=$RUN_ID" >> $GITHUB_OUTPUT
-
-    - name: Download installer(rpm) artifacts
-      uses: actions/download-artifact@v8
-      with:
-        name: artifacts
-        run-id: ${{ steps.installer-rpm.outputs.installer_rpm_run_id }}
-
-    - name: Download all artifacts
-      uses: actions/download-artifact@v8
-      with:
-        path: artifacts
-
-    - name: List downloaded artifacts
-      run: |
-        find artifacts -type f -name "*" | sort
-
-    - name: Create Release
-      uses: softprops/action-gh-release@v2
-      with:
-        name: Release ${{ github.ref_name }}
-        draft: false
-        prerelease: true
-        # ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
-        generate_release_notes: true
-        files: |
-          artifacts/mspp4-installer-windows/*
-          artifacts/mspp4-installer-macos/*
-          artifacts/mspp4-installer-macos-intel/*
-          artifacts/mspp4-installer-linux-debian/*
-          artifacts/mspp4-installer-linux-rpm-alma9/*
-          artifacts/mspp4-installer-linux-rpm-alma10/*
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: true
+          # ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
+          generate_release_notes: true
+          files: |
+            artifacts/mspp4-installer-windows/*
+            artifacts/mspp4-installer-macos/*
+            artifacts/mspp4-installer-macos-intel/*
+            artifacts/mspp4-installer-linux-debian/*
+            artifacts/mspp4-installer-linux-rpm-alma9/*
+            artifacts/mspp4-installer-linux-rpm-alma10/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
