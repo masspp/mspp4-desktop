@@ -1,11 +1,11 @@
 name: Build MSPP4 and Create Installer
 
 on:
-  push:
-    branches: [ main , develop ]
-    tags: [ 'v*' ]
-  pull_request:
-    branches: [ main ]
+  #push:
+  #  branches: [ main , develop ]
+  #  tags: [ 'v*' ]
+  #pull_request:
+  #  branches: [ main ]
   workflow_call:
 
 env:
