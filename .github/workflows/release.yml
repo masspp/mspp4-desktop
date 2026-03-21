@@ -26,15 +26,9 @@ jobs:
       - name: Download installer artifacts
         uses: actions/download-artifact@v8
         with:
-          name: mspp4-installer-*
           path: artifacts
+          merge-multiple: true
 
-      - name: Download installer(rpm) artifacts
-        uses: actions/download-artifact@v8
-        with:
-          name: mspp4-installer-*
-          path: artifacts
-      
       - name: List downloaded artifacts
         run: |
           find artifacts -type f -name "*" | sort
