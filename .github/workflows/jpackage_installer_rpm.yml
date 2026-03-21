@@ -18,8 +18,14 @@ jobs:
   build-rpm:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        container:
+          - almalinux:9
+          - almalinux:10
+
     container:
-      image: almalinux:10
+      image: ${{ matrix.container }}
 
     steps:
     - name: Checkout repository
