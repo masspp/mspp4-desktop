@@ -103,7 +103,7 @@ jobs:
       run: |
         $JAVA_HOME/bin/jpackage \
           --input ./target \
-          --name "MS++4" \
+          --name "Mass++4" \
           --main-jar mspp4-desktop-jar-with-dependencies.jar \
           --main-class ninja.mspp.MsppLauncher \
           --icon ./src/main/resources/ninja/mspp/images/icon/MS_icon_256.png \
@@ -111,9 +111,9 @@ jobs:
           --dest installers \
           --runtime-image runtime-image \
           --app-version ${{ steps.version.outputs.VERSION }} \
-          --vendor "MS++4 Team" \
-          --description "Mass Spectrometry Plus-Plus Platform 4" \
-          --copyright "Copyright © 2025 MS++4 Team" \
+          --vendor "Mass++ Users Group" \
+          --description "Interoperable Mass Spectrometry Viewer" \
+          --copyright "Copyright © 2025 Mass++ Users Group" \
           --linux-shortcut \
           --linux-menu-group "Science"
 
