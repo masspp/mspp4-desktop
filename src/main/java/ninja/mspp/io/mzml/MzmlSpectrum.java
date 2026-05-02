@@ -14,7 +14,12 @@ import ninja.mspp.core.model.ms.Spectrum;
 
 public class MzmlSpectrum extends Spectrum {
 	private MsScan scan;
-	
+	private MzmlBinaryIndex binaryIndex;
+	private int binaryIndexEntry = -1;
+	private Range<Double> mzRange;
+	private boolean mzRangeResolved;
+	private double precursorMz = Double.NaN;
+
 	public MzmlSpectrum(Sample sample, MsScan scan) {
 		super(
 			sample,
@@ -24,20 +29,71 @@ public class MzmlSpectrum extends Spectrum {
 			getRetentionTime(scan),
 			scan.getMsLevel(),
 			getPolarity(scan.getPolarity()),
-			getPrecursorMz(scan),
-			getStartMz(scan),
-			getEndMz(scan),
+			-1.0,
+			-1.0,
+			-1.0,
 			isCentroidMode(scan)
 		);
 		this.scan = scan;
 	}
 
+	public void setBinaryIndex(MzmlBinaryIndex index, int entryIdx) {
+		this.binaryIndex = index;
+		this.binaryIndexEntry = entryIdx;
+	}
+
+	@Override
+	public double getPrecursorMass() {
+		if(Double.isNaN(this.precursorMz)) {
+			this.precursorMz = getPrecursorMz(this.scan);
+		}
+		return this.precursorMz;
+	}
+
+	@Override
+	public double getMinMz() {
+		Range<Double> r = this.resolveMzRange();
+		return r == null ? -1.0 : r.lowerEndpoint();
+	}
+
+	@Override
+	public double getMaxMz() {
+		Range<Double> r = this.resolveMzRange();
+		return r == null ? -1.0 : r.upperEndpoint();
+	}
+
+	private Range<Double> resolveMzRange() {
+		if(!this.mzRangeResolved) {
+			this.mzRange = this.scan.getMzRange();
+			this.mzRangeResolved = true;
+		}
+		return this.mzRange;
+	}
+
 	@Override
 	protected DataPoints onReadDataPoints() {
-		double[] masses = this.scan.getMzValues();
-		float[] intensities = this.scan.getIntensityValues();
+		double[] masses;
+		float[] intensities;
+		if(this.binaryIndex != null && this.binaryIndexEntry >= 0) {
+			MzmlBinaryIndex.Entry mzEntry = this.binaryIndex.getSpectrumEntry(
+				this.binaryIndexEntry, MzmlBinaryIndex.ArrayType.MZ);
+			MzmlBinaryIndex.Entry intEntry = this.binaryIndex.getSpectrumEntry(
+				this.binaryIndexEntry, MzmlBinaryIndex.ArrayType.INTENSITY);
+			try {
+				masses = MzmlBinaryDecoder.readDoubles(this.binaryIndex.getFile(), mzEntry);
+				intensities = MzmlBinaryDecoder.readFloats(this.binaryIndex.getFile(), intEntry);
+			}
+			catch(java.io.IOException e) {
+				throw new RuntimeException("Failed to read spectrum binary data", e);
+			}
+		}
+		else {
+			masses = this.scan.getMzValues();
+			intensities = this.scan.getIntensityValues();
+		}
 		DataPoints points = new DataPoints();
-		for (int i = 0; i < masses.length; i++) {
+		int n = Math.min(masses.length, intensities.length);
+		for(int i = 0; i < n; i++) {
 			points.add(new ninja.mspp.core.model.ms.Point(masses[i], intensities[i]));
 		}
 		return points;
@@ -74,28 +130,6 @@ public class MzmlSpectrum extends Spectrum {
         return isCentroid;
 
     }
-	
-	private static double getStartMz(MsScan scan) {
-		double startMz = -1.0;
-		if (scan != null) {
-			Range<Double> range = scan.getMzRange();
-			if(range != null) {
-				startMz = range.lowerEndpoint();
-			}
-		}
-		return startMz;
-	}
-	
-	private static double getEndMz(MsScan scan) {
-		double endMz = -1.0;
-		if (scan != null) {
-			Range<Double> range = scan.getMzRange();
-			if (range != null) {
-				endMz = range.upperEndpoint();
-			}
-		}
-		return endMz;
-	}
 	
 	public int getPrecursorScanNumber() {
 		int precursorScan = -1;

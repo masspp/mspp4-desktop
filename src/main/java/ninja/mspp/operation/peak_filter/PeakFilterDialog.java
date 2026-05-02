@@ -291,6 +291,7 @@ public class PeakFilterDialog implements Initializable {
 				return cell;
 			}
 		);
+	
 		this.colorColumn.setCellValueFactory(new PropertyValueFactory<>("color"));
 		this.colorColumn.setCellFactory(
 			column -> {

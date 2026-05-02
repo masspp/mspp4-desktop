@@ -85,6 +85,19 @@ public class ResultDialog implements Initializable {
 				return cell;
 			}
 		);
+		rtColumn.setComparator(
+			(s1, s2) -> {
+				double v1 = Double.parseDouble(s1);
+				double v2 = Double.parseDouble(s2);
+				if(v1 < v2) {
+					return -1;
+				}
+				else if(v1 > v2) {
+					return 1;
+				}
+				return 0;
+			}
+		);
 		this.table.getColumns().add(rtColumn);
 			
 		TableColumn<HitPeak, String> stageColumn = new TableColumn<>("MS Stage");
@@ -112,7 +125,20 @@ public class ResultDialog implements Initializable {
 				};
 				return cell;
 			}
-		);					
+		);			
+		stageColumn.setComparator(
+				(s1, s2) -> {
+					int v1 =Integer.parseInt(s1);
+					int v2 = Integer.parseInt(s2);
+					if(v1 < v2) {
+						return -1;
+					}
+					else if(v1 > v2) {
+						return 1;
+					}
+					return 0;
+				}
+			);
 		this.table.getColumns().add(stageColumn);
 			 
 		TableColumn<HitPeak, String> precursorColumn = new TableColumn<>("Precursor");
@@ -141,6 +167,19 @@ public class ResultDialog implements Initializable {
 				return cell;
 			}
 		);
+		precursorColumn.setComparator(
+				(s1, s2) -> {
+					double v1 = Double.parseDouble(s1);
+					double v2 = Double.parseDouble(s2);
+					if(v1 < v2) {
+						return -1;
+					}
+					else if(v1 > v2) {
+						return 1;
+					}
+					return 0;
+				}
+			);
 		this.table.getColumns().add(precursorColumn);
 		
 		this.table.getSelectionModel().selectedItemProperty().addListener(

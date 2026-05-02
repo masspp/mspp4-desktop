@@ -1,3 +1,7 @@
 /target/
 /MassPlusPlus/
 /installer/win/Output
+.vscode
+*.log
+*.tmp
+*.bak

@@ -436,13 +436,16 @@ public class PeakFilterManager {
 				Color color = this.getColor(peak.getColor());
 				g.setColor(color);
 				
-				double mz = peak.getMz();
-				
 				for(HitPeak hit : this.result) {
 					Map<FilterPeak, Double> map = hit.getHitMap();
 					if(map.containsKey(peak)) {
 						Spectrum spectrum = hit.getSpectrum();
+						double mz = spectrum.getPrecursorMass();
 						double rt = spectrum.getRt();
+						Spectrum precursorSpectrum = spectrum.getPrecursor();
+						if(precursorSpectrum != null) { 
+							rt = precursorSpectrum.getRt();
+						}
 						
 						double[] coordinate = {rt, mz, 1.0};
 						double[] position = matrix.operate(coordinate);
