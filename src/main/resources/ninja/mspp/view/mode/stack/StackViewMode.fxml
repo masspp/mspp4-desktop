@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ninja.mspp.view.mode.stack.StackViewMode">
+   <center>
+      <SplitPane dividerPositions="0.3" BorderPane.alignment="CENTER">
+         <items>
+            <SplitPane dividerPositions="0.3, 0.6" orientation="VERTICAL">
+               <items>
+                  <BorderPane fx:id="sampleTablePane" />
+                  <BorderPane fx:id="chromatogramTablePane" />
+                  <BorderPane fx:id="spectrumTablePane" />
+               </items>
+            </SplitPane>
+            <BorderPane>
+               <center>
+                  <TabPane fx:id="tabs" tabClosingPolicy="UNAVAILABLE">
+                     <tabs>
+                        <Tab fx:id="chromatogramTab" text="Chromatogram">
+                           <ScrollPane fx:id="chromatogramScroll" fitToWidth="true">
+                              <content>
+                                 <VBox fx:id="chromatogramStack" />
+                              </content>
+                           </ScrollPane>
+                        </Tab>
+                        <Tab fx:id="spectrumTab" text="Spectrum">
+                           <ScrollPane fx:id="spectrumScroll" fitToWidth="true">
+                              <content>
+                                 <VBox fx:id="spectrumStack" />
+                              </content>
+                           </ScrollPane>
+                        </Tab>
+                     </tabs>
+                  </TabPane>
+               </center>
+               <bottom>
+                  <HBox alignment="CENTER_LEFT" spacing="8.0" BorderPane.alignment="CENTER">
+                     <padding>
+                        <Insets bottom="6.0" left="10.0" right="10.0" top="6.0" />
+                     </padding>
+                     <children>
+                        <Label text="Graph height:" />
+                        <Slider fx:id="heightSlider" blockIncrement="10.0" majorTickUnit="80.0" max="500.0" min="60.0" prefWidth="280.0" showTickLabels="true" showTickMarks="true" value="150.0" />
+                        <CheckBox fx:id="ySyncCheckBox" selected="true" text="Sync Y axis" />
+                     </children>
+                  </HBox>
+               </bottom>
+            </BorderPane>
+         </items>
+      </SplitPane>
+   </center>
+</BorderPane>

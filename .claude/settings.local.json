@@ -60,7 +60,30 @@
       "Bash(curl -s \"https://repository.massbank.jp/api/projects/MPST000187.0/files/f_0000052335\")",
       "Bash(unzip -p \"/c/Users/satst/.m2/repository/ninja/mspp/mspp4-core/4.0.0/mspp4-core-4.0.0.jar\" ninja/mspp/core/annotation/method/MenuAction.class)",
       "Bash(javap /tmp/MenuAction.class)",
-      "Bash(javap -v /tmp/MenuAction.class)"
+      "Bash(javap -v /tmp/MenuAction.class)",
+      "Bash(javap /tmp/mspp4-core-extract/ninja/mspp/core/model/ms/Chromatogram.class)",
+      "WebFetch(domain:repository.jpostdb.org)",
+      "Bash(curl -s -m 20 -H \"Accept: application/json\" \"https://repository.jpostdb.org/api/statistics\")",
+      "Bash(curl -s -m 20 -o /dev/null -w \"%{http_code} %{url_effective}\\\\n\" -H \"Accept: application/json\" \"https://repository.jpostdb.org/api/statistics\")",
+      "Bash(curl -s -m 20 \"https://repository.jpostdb.org/\")",
+      "Bash(curl -s -m 20 -o /dev/null -w \"%{http_code} %{url_effective}\\\\n\" \"https://repository.jpostdb.org/project/JPST000001\")",
+      "Bash(curl -s -m 20 \"https://repository.jpostdb.org/preview/JPST000001\")",
+      "Bash(curl -s -m 30 \"https://repository.jpostdb.org/assets/js/app-4ed01c503a.js\" -o app.js)",
+      "Bash(grep -oE '.{60}_api/[^\"`]{0,60}' app.js)",
+      "Bash(grep -oE '_api/\\\\$\\\\{[^}]*\\\\}[^\"`]{0,40}' app.js)",
+      "Bash(python3 -)",
+      "Bash(curl -s -m 25 -D - -H 'X-Requested-With: XMLHttpRequest' -H 'Referer: https://repository.jpostdb.org/' -H 'Accept: application/json' 'https://repository.jpostdb.org/_api/project?offset=0&num=2')",
+      "Bash(curl -s -m 25 \"https://repository.jpostdb.org/\" -o index.html)",
+      "Bash(grep -oiE '\\(ftp[s]?://[^\"`'\"'\"' ]+|proxy/[a-z0-9./_{}+-]*|\"[^\"]*download[^\"]*\"|xpressdownload|/files/[a-z0-9./_{}+-]*\\)' app.js)",
+      "Bash(curl -s -m 20 \"https://repository.jpostdb.org/project/JPST004721\" -o proj_page.html)",
+      "Bash(curl -s -m 25 -I https://storage.jpostdb.org/JPST004721/__TRACKED_VAR__)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); from collections import Counter; print\\(Counter\\(p['status'] for p in d\\)\\); print\\('item.total=',d[0]['total']\\); print\\('count=',len\\(d\\)\\)\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); from collections import Counter; print\\(Counter\\(p['status'] for p in d\\)\\); print\\('item.total=',d[0]['total'],'count=',len\\(d\\)\\)\")",
+      "Bash(java -version)",
+      "Bash(timeout 580 ./mvnw -q -o compile)",
+      "Bash(echo \"EXIT=$?\")",
+      "Bash(find /tmp/claude-1000/-mnt-c-Users-satst-git-mspp4-desktop/062313f7-1d1b-4e8c-b533-627e4e42aca5/scratchpad/all-out/ninja/mspp/operation/jpost -name *.class)",
+      "Bash(cd *)"
     ]
   }
 }
