@@ -38,6 +38,7 @@ import ninja.mspp.core.annotation.method.OnOpenSample;
 import ninja.mspp.core.model.ms.Sample;
 import ninja.mspp.core.model.ms.TicChromatogram;
 import ninja.mspp.io.mzml.MzmlReader;
+import ninja.mspp.io.mzml.ui.DockerRequiredDialog;
 import ninja.mspp.io.mzml.ui.ProgressDialog;
 import ninja.mspp.operation.mb_post.model.MbPostFile;
 import ninja.mspp.operation.mb_post.model.MbPostFileDetail;
@@ -416,6 +417,9 @@ public class MbPostDialog {
 		if(kind == FileKind.UNSUPPORTED) {
 			return;
 		}
+		if(kind == FileKind.MS_DATA && !DockerRequiredDialog.check(file.getName())) {
+			return;
+		}
 		List<MbPostFile> companions = this.findCompanions(file);
 		this.downloadAndOpen(file, companions, kind);
 	}
@@ -514,6 +518,10 @@ public class MbPostDialog {
 	}
 
 	private static void openMsData(File file) {
+		// Docker may have been stopped while a large file was downloading.
+		if(!DockerRequiredDialog.check(file.getName(), "The downloaded file has been kept locally.")) {
+			return;
+		}
 		GuiManager gui = GuiManager.getInstance();
 		MsppManager manager = MsppManager.getInstance();
 		ProgressDialog dialog = new ProgressDialog(
