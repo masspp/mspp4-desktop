@@ -1,4 +1,4 @@
-name: Build MSPP4 and Create Installer
+name: Build Mass++4 and Create Installer
 
 on:
   #push:
@@ -118,7 +118,7 @@ jobs:
       run: |
         $JAVA_HOME/bin/jpackage \
           --input ./target \
-          --name "MS++4" \
+          --name "Mass++4" \
           --main-jar mspp4-desktop-jar-with-dependencies.jar \
           --main-class ninja.mspp.MsppLauncher \
           --icon ${{ matrix.icon-path }} \
@@ -126,9 +126,9 @@ jobs:
           --dest installers \
           --runtime-image runtime-image \
           --app-version ${{ steps.version.outputs.VERSION }} \
-          --vendor "MS++4 Team" \
-          --description "Mass Spectrometry Plus-Plus Platform 4" \
-          --copyright "Copyright © 2025 MS++4 Team" \
+          --vendor "Mass++ Users Group" \
+          --description "Interoperable Mass Spectrometry Viewer" \
+          --copyright "Copyright © 2025 Mass++ Users Group" \
           --linux-shortcut \
           --linux-menu-group "Science"
 
@@ -137,7 +137,7 @@ jobs:
       run: |
         & "$env:JAVA_HOME\bin\jpackage.exe" `
           --input .\target `
-          --name "MS++4" `
+          --name "Mass++4" `
           --main-jar (Get-ChildItem .\target\mspp4-desktop-jar-with-dependencies.jar | Select-Object -First 1).Name `
           --main-class ninja.mspp.MsppLauncher `
           --icon ${{ matrix.icon-path }} `
@@ -145,9 +145,9 @@ jobs:
           --dest installers `
           --runtime-image runtime-image `
           --app-version ${{ steps.version.outputs.VERSION }} `
-          --vendor "MSPP4 Team" `
-          --description "Mass Spectrometry Post-Processing Platform 4" `
-          --copyright "Copyright © 2025 MS++4 Team" `
+          --vendor "Mass++ Users Group" `
+          --description "Interoperable Mass Spectrometry Viewer" `
+          --copyright "Copyright © 2025 Mass++ Users Group" `
           --win-shortcut `
           --win-menu `
           --win-dir-chooser
@@ -158,7 +158,7 @@ jobs:
       run: |
         $JAVA_HOME/bin/jpackage \
           --input ./target \
-          --name "MSPP4" \
+          --name "Mass++4" \
           --main-jar $(ls ./target/mspp4-desktop-jar-with-dependencies.jar | head -1 | xargs basename) \
           --main-class ninja.mspp.MsppLauncher \
           --icon ${{ matrix.icon-path }} \
@@ -166,9 +166,9 @@ jobs:
           --dest installers \
           --runtime-image runtime-image \
           --app-version ${{ steps.version.outputs.VERSION }} \
-          --vendor "MSPP4 Team" \
-          --description "Mass Spectrometry Plus-Plus Platform 4" \
-          --copyright "Copyright © 2025 MS++4 Team"
+          --vendor "Mass++ Users Group" \
+          --description "Interoperable Mass Spectrometry Viewer" \
+          --copyright "Copyright © 2025 Mass++ Users Group"
 
     - name: Rename created installer
       if: matrix.os == 'macos-latest' || matrix.os == 'macos-15-intel'

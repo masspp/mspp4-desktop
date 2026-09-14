@@ -1,4 +1,4 @@
-#  Mass++ ver. 4 desktop
+#  Mass++ 4
 
 ##  How to develop
 
