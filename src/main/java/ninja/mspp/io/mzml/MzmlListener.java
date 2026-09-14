@@ -16,8 +16,8 @@ import ninja.mspp.core.annotation.method.OnOpenSample;
 import ninja.mspp.core.model.ms.Sample;
 import ninja.mspp.core.model.ms.TicChromatogram;
 import ninja.mspp.io.mzml.convert.VendorConverter;
+import ninja.mspp.io.mzml.ui.DockerRequiredDialog;
 import ninja.mspp.io.mzml.ui.ProgressDialog;
-import ninja.mspp.tool.docker.DockerManager;
 import ninja.mspp.view.GuiManager;
 
 @Listener("MS Data Input Listener")
@@ -51,10 +51,7 @@ public class MzmlListener {
 			return;
 		}
 
-		if(VendorConverter.isVendorFile(file) && !DockerManager.getInstance().isDockerAvailable()) {
-			showError("Docker is not running",
-				"Reading " + file.getName() + " requires Docker Desktop to convert "
-				+ "the vendor file to mzML. Please start Docker Desktop and try again.");
+		if(!DockerRequiredDialog.check(file.getName())) {
 			return;
 		}
 
