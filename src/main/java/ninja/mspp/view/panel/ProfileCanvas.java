@@ -4,9 +4,15 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Stack;
 
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
@@ -15,7 +21,10 @@ import org.apache.commons.math3.linear.RealMatrix;
 
 import javafx.scene.Cursor;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.FileChooser;
 import ninja.mspp.core.model.ms.DataPoints;
+import ninja.mspp.core.model.ms.Peak;
+import ninja.mspp.core.model.ms.PeakList;
 import ninja.mspp.core.model.ms.Point;
 import ninja.mspp.core.model.view.Bounds;
 import ninja.mspp.core.model.view.DrawingData;
@@ -625,6 +634,62 @@ public class ProfileCanvas extends CanvasBase {
 		}
 	}
 	
+	protected void savePeakList(PeakList peaks) throws IOException {
+		FileChooser chooser = new FileChooser();
+		FileChooser.ExtensionFilter csvFilter = new FileChooser.ExtensionFilter("CSV Files", "*.csv");
+		FileChooser.ExtensionFilter txtFilter = new FileChooser.ExtensionFilter("Tab-delimited Text Files", "*.txt");
+		chooser.getExtensionFilters().add(csvFilter);
+		chooser.getExtensionFilters().add(txtFilter);
+		chooser.setTitle("Save Peak List");
+
+		File file = chooser.showSaveDialog(this.getScene().getWindow());
+		if (file != null) {
+			String name = file.getName().toLowerCase(Locale.ROOT);
+			if (!name.endsWith(".csv") && !name.endsWith(".txt")) {
+				String extension = chooser.getSelectedExtensionFilter() == txtFilter ? ".txt" : ".csv";
+				file = new File(file.getParentFile(), file.getName() + extension);
+			}
+			this.savePeakList(peaks, file);
+		}
+	}
+
+	/**
+	 * Saves the peak list as CSV when the file name ends with .csv, otherwise as tab-delimited text.
+	 */
+	protected void savePeakList(PeakList peaks, File file) throws IOException {
+		boolean csv = file.getName().toLowerCase(Locale.ROOT).endsWith(".csv");
+		String separator = csv ? "," : "\t";
+
+		List<Peak> sorted = new ArrayList<Peak>(peaks);
+		sorted.sort((a, b) -> Double.compare(a.getX(), b.getX()));
+
+		try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(file.toPath(), StandardCharsets.UTF_8))) {
+			writer.println(String.join(separator, this.xTitle, "Intensity", "Start", "End", "Annotation"));
+			for (Peak peak : sorted) {
+				String annotation = peak.getAnnotation() == null ? "" : peak.getAnnotation();
+				annotation = csv ? escapeCsv(annotation) : annotation.replaceAll("[\\t\\r\\n]+", " ");
+				writer.println(String.join(
+					separator,
+					String.valueOf(peak.getX()),
+					String.valueOf(peak.getY()),
+					String.valueOf(peak.getStart()),
+					String.valueOf(peak.getEnd()),
+					annotation
+				));
+			}
+			if (writer.checkError()) {
+				throw new IOException("Failed to write " + file.getAbsolutePath());
+			}
+		}
+	}
+
+	private static String escapeCsv(String value) {
+		if (value.contains(",") || value.contains("\"") || value.contains("\n") || value.contains("\r")) {
+			return "\"" + value.replace("\"", "\"\"") + "\"";
+		}
+		return value;
+	}
+
 	public void refresh() {
 		this.draw();
 	}

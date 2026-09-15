@@ -16,8 +16,10 @@ import ninja.mspp.MsppManager;
 import ninja.mspp.core.annotation.method.SpectrumAction;
 import ninja.mspp.core.annotation.method.SpectrumCanvasBackground;
 import ninja.mspp.core.annotation.method.SpectrumCanvasForeground;
+import ninja.mspp.core.model.PeakManager;
 import ninja.mspp.core.model.listener.ListenerMethod;
 import ninja.mspp.core.model.ms.DataPoints;
+import ninja.mspp.core.model.ms.PeakList;
 import ninja.mspp.core.model.ms.Spectrum;
 import ninja.mspp.core.model.view.Bounds;
 import ninja.mspp.core.model.view.Range;
@@ -105,6 +107,21 @@ public class SpectrumCanvas extends ProfileCanvas {
 		    }
 		);
 		saveItem.getItems().add(svgItem);
+
+		PeakList peaks = PeakManager.getInstance().getPeaks(spectrum);
+		MenuItem peakItem = new MenuItem("Peak List...");
+		peakItem.setDisable(peaks == null || peaks.isEmpty());
+		peakItem.setOnAction(
+			(e) -> {
+				try {
+					this.savePeakList(peaks);
+				}
+				catch(Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		);
+		saveItem.getItems().add(peakItem);
 		
 		return menu;		
 	}
