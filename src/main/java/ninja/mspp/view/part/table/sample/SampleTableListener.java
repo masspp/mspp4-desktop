@@ -35,6 +35,11 @@ public class SampleTableListener {
 			manager.getOpenedSamples().add(sample);
 			TableView<Sample> table = SampleTableManager.getInstance().getTableView();
 			table.getItems().add(sample);
+
+			// Select the sample automatically when it is the first one opened.
+			if(manager.getOpenedSamples().size() == 1) {
+				table.getSelectionModel().select(sample);
+			}
 		}
 	}
 }
