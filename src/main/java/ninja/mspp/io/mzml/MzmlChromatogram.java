@@ -29,6 +29,8 @@ public class MzmlChromatogram extends Chromatogram{
 	protected DataPoints onReadDataPoints() {
 		float[] times;
 		float[] intensities;
+		// Times are treated as seconds unless the mzML time array is recorded in minutes.
+		double scale = 1.0 / 60.0;
 		if(this.binaryIndex != null && this.binaryIndexEntry >= 0) {
 			MzmlBinaryIndex.Entry timeEntry = this.binaryIndex.getChromatogramEntry(
 				this.binaryIndexEntry, MzmlBinaryIndex.ArrayType.TIME);
@@ -37,6 +39,9 @@ public class MzmlChromatogram extends Chromatogram{
 			try {
 				times = MzmlBinaryDecoder.readFloats(this.binaryIndex.getFile(), timeEntry);
 				intensities = MzmlBinaryDecoder.readFloats(this.binaryIndex.getFile(), intEntry);
+				if(MzmlBinaryIndex.UNIT_MINUTE.equals(timeEntry.unitAccession)) {
+					scale = 1.0;
+				}
 			}
 			catch(java.io.IOException e) {
 				throw new RuntimeException("Failed to read chromatogram binary data", e);
@@ -49,7 +54,7 @@ public class MzmlChromatogram extends Chromatogram{
 		DataPoints points = new DataPoints();
 		int n = Math.min(times.length, intensities.length);
 		for(int i = 0; i < n; i++) {
-			points.add(new Point(times[i] / 60.0, intensities[i]));
+			points.add(new Point(times[i] * scale, intensities[i]));
 		}
 		return points;
 	}

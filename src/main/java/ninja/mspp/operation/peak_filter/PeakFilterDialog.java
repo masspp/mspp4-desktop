@@ -126,8 +126,20 @@ public class PeakFilterDialog implements Initializable {
 		}
 		System.out.println(peaks);
 		
-		double tolerance = Double.parseDouble(this.toleranceText.getText());
-		double threshold = Double.parseDouble(this.thresholdText.getText());
+		double tolerance;
+		double threshold;
+		try {
+			tolerance = Double.parseDouble(this.toleranceText.getText().trim());
+			threshold = Double.parseDouble(this.thresholdText.getText().trim());
+		}
+		catch(NumberFormatException e) {
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.setTitle("Peak Filter");
+			alert.setHeaderText("Invalid search conditions");
+			alert.setContentText("Enter numbers for m/z Tolerance and Intensity Threshold.");
+			alert.showAndWait();
+			return;
+		}
 		String unit = this.unitChoice.getSelectionModel().getSelectedItem();		
 		List<HitPeak> result = manager.searchPeaks(this.sample, peaks, tolerance, threshold, unit);
 		System.out.println(result);
