@@ -201,7 +201,7 @@ public class ResultDialog implements Initializable {
 	public void setResult(List<FilterPeak> peaks, List<HitPeak> result) {
 		for(FilterPeak peak : peaks) {
 			String peakName = peak.getName();
-			String title = String.format("%s [%.2f]]", peakName, peak.getMz());
+			String title = String.format("%s [%.2f]", peakName, peak.getMz());
 			TableColumn<HitPeak, String> resultColumn = new TableColumn<>(title);
 			resultColumn.setCellValueFactory(
 				data -> {

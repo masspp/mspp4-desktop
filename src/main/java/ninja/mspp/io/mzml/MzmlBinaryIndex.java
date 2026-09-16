@@ -29,6 +29,9 @@ public class MzmlBinaryIndex {
 	public enum Compression { NONE, ZLIB }
 	public enum Precision { FLOAT32, FLOAT64 }
 
+	/** Unit accession of a time array recorded in minutes. */
+	public static final String UNIT_MINUTE = "UO:0000031";
+
 	public static class Entry {
 		public final long position;
 		public final long encodedLength;
@@ -36,15 +39,17 @@ public class MzmlBinaryIndex {
 		public final Compression compression;
 		public final Precision precision;
 		public final ArrayType type;
+		public final String unitAccession;
 
 		Entry(long position, long encodedLength, long arrayLength,
-				Compression compression, Precision precision, ArrayType type) {
+				Compression compression, Precision precision, ArrayType type, String unitAccession) {
 			this.position = position;
 			this.encodedLength = encodedLength;
 			this.arrayLength = arrayLength;
 			this.compression = compression;
 			this.precision = precision;
 			this.type = type;
+			this.unitAccession = unitAccession;
 		}
 	}
 
@@ -171,6 +176,7 @@ public class MzmlBinaryIndex {
 			s.currentCompression = Compression.NONE;
 			s.currentPrecision = Precision.FLOAT64;
 			s.currentType = ArrayType.OTHER;
+			s.currentUnit = null;
 			s.inBinaryArray = true;
 		}
 		else if("cvParam".equals(name) && s.inBinaryArray) {
@@ -198,6 +204,7 @@ public class MzmlBinaryIndex {
 			}
 			else if("MS:1000595".equals(acc)) {
 				s.currentType = ArrayType.TIME;
+				s.currentUnit = parseStringAttr(tag, "unitAccession");
 			}
 		}
 		else if("binary".equals(name) && s.inBinaryArray && s.currentList != null) {
@@ -207,7 +214,8 @@ public class MzmlBinaryIndex {
 				s.currentArrayLength,
 				s.currentCompression,
 				s.currentPrecision,
-				s.currentType
+				s.currentType,
+				s.currentUnit
 			);
 			s.currentList.add(entry);
 		}
@@ -288,5 +296,6 @@ public class MzmlBinaryIndex {
 		Compression currentCompression = Compression.NONE;
 		Precision currentPrecision = Precision.FLOAT64;
 		ArrayType currentType = ArrayType.OTHER;
+		String currentUnit;
 	}
 }

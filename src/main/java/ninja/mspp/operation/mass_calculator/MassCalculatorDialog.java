@@ -231,6 +231,7 @@ public class MassCalculatorDialog {
 
 		Stage stage = new Stage();
 		stage.initOwner(guiManager.getMainStage());
+		stage.setTitle("Peak Filter");
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
 		currentStageForPeakFilter = stage;
