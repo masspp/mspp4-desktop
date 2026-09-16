@@ -1,11 +1,11 @@
 package ninja.mspp;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,11 +105,9 @@ public class App extends Application {
 				try {
 					System.out.println("Client connected: " + socket.getInetAddress());
 	                
-	                BufferedReader in = new BufferedReader(
-	                    new InputStreamReader(socket.getInputStream())
-	                );
+	                InputStream in = socket.getInputStream();
 	                
-	                String line = in.readLine();
+	                String line = readLine(in);
 	                if (line != null) {
 	                    System.out.println("Request: " + line);
 	                    String[] requestParts = line.split(" ");
@@ -123,7 +121,7 @@ public class App extends Application {
 	                        String headerLine;
 	                        int contentLength = 0;
 	                        
-	                        while ((headerLine = in.readLine()) != null && !headerLine.isEmpty()) {
+	                        while ((headerLine = readLine(in)) != null && !headerLine.isEmpty()) {
 	                            String[] headerParts = headerLine.split(": ", 2);
 	                            if (headerParts.length == 2) {
 	                                headers.put(headerParts[0], headerParts[1]);
@@ -136,9 +134,9 @@ public class App extends Application {
 	                        String jsonBody = "";
 	                        String response = "";
 	                        if (method.equals("POST") && contentLength > 0) {
-	                            char[] bodyChars = new char[contentLength];
-	                            in.read(bodyChars, 0, contentLength);
-	                            jsonBody = new String(bodyChars);
+	                            // Read the whole body: a single read can return only part of a large request.
+	                            byte[] body = in.readNBytes(contentLength);
+	                            jsonBody = new String(body, StandardCharsets.UTF_8);
 	                            System.out.println("Received JSON: " + jsonBody);
 	                            
 	                            response = this.processJsonRequest(operation, jsonBody);
@@ -148,7 +146,7 @@ public class App extends Application {
 	                        
 	                        String httpResponse = "HTTP/1.1 200 OK\r\n" +
 	                                              "Content-Type: application/json\r\n" +
-	                                              "Content-Length: " + response.length() + "\r\n" +
+	                                              "Content-Length: " + response.getBytes(StandardCharsets.UTF_8).length + "\r\n" +
 	                                              "Connection: close\r\n" +
 	                                              "\r\n" +
 	                                              response;
@@ -167,6 +165,27 @@ public class App extends Application {
 	}
 
 	
+	/**
+	 * Reads one line of the request header, which is ASCII, without buffering
+	 * ahead so that the body can be read from the same stream afterwards.
+	 */
+	private static String readLine(InputStream in) throws IOException {
+		StringBuilder builder = new StringBuilder();
+		int c;
+		while ((c = in.read()) >= 0) {
+			if (c == '\n') {
+				break;
+			}
+			if (c != '\r') {
+				builder.append((char)c);
+			}
+		}
+		if (c < 0 && builder.length() == 0) {
+			return null;
+		}
+		return builder.toString();
+	}
+
 	private String processJsonRequest(String operation, String data) throws JsonProcessingException {
 		MsppManager manager = MsppManager.getInstance();
 		List<ListenerMethod<Service>> list = manager.getMethods(Service.class);

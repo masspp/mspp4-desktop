@@ -11,6 +11,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import javafx.application.Platform;
+
 import ninja.mspp.MsppManager;
 import ninja.mspp.core.annotation.clazz.Listener;
 import ninja.mspp.core.annotation.method.OnOpenSample;
@@ -109,9 +111,12 @@ public class IOService {
 				sample.getChromatograms().add(ticChromatogram);
 			}
 
-			msppManager.invoke(OnOpenSample.class, sample);
-			msppManager.invoke(OnSelectSample.class, sample);
-			msppManager.invoke(OnSelectSpectrum.class, spectrum);
+			// Services run on the API server thread, so update the views on the JavaFX thread.
+			Platform.runLater(() -> {
+				msppManager.invoke(OnOpenSample.class, sample);
+				msppManager.invoke(OnSelectSample.class, sample);
+				msppManager.invoke(OnSelectSpectrum.class, spectrum);
+			});
 		}
 
 		Map<String, String> result = new HashMap<String, String>();
@@ -164,7 +169,7 @@ public class IOService {
 		Sample sample = manager.getActiveSample();
 		Spectrum activeSpectrum = manager.getActiveSpectrum();
 		int currentIndex = 0;
-		int index = -1;
+		int index = 0;
 
 		if (sample != null) {
 			for (Spectrum spectrum : sample.getSpectra()) {
