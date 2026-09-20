@@ -15,7 +15,9 @@ import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
+import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
@@ -466,6 +468,10 @@ public class ThreeDPanel implements Initializable {
 		Group root = new Group();
 		root.getChildren().clear();
 		if(heatmap == null) {
+			// Clear the previous heatmap, and show "Now Loading..." while the heatmap is calculated.
+			this.root = null;
+			this.group = null;
+			this.pane.setCenter(HeatMapCanvas.isHeatMapLoading() ? createLoadingLabel() : null);
 			return;
 		}
 		this.root = root;
@@ -610,6 +616,13 @@ public class ThreeDPanel implements Initializable {
 				}
 			);
 		}
+	}
+
+	private static Label createLoadingLabel() {
+		Label label = new Label("Now Loading...");
+		label.setStyle("-fx-font-size: 16px; -fx-text-fill: gray;");
+		BorderPane.setAlignment(label, Pos.CENTER);
+		return label;
 	}
 
 	private void onUpdateConfig() {

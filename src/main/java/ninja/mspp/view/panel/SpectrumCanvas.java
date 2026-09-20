@@ -130,6 +130,10 @@ public class SpectrumCanvas extends ProfileCanvas {
 	@Override
 	protected void onMouseClicked(MouseEvent event) {
 		if(event.getButton() == MouseButton.SECONDARY) {
+			if(this.data == null || this.matrix == null) {
+				// Nothing is drawn yet, for example while the data are loading.
+				return;
+			}
 			RealMatrix inverse = MatrixUtils.inverse(this.matrix);
 			double[] coordinate = {event.getX(), event.getY(), 1.0};
 			double[] data = inverse.operate(coordinate);
@@ -168,10 +172,10 @@ public class SpectrumCanvas extends ProfileCanvas {
 	
 	public void setSpectrum(Spectrum spectrum) {
 		if(spectrum != null) {
-			this.setImpulseMode(spectrum.isCentroidMode());
-			DataPoints points = spectrum.readDataPoints();
 			this.spectrum = spectrum;
-			this.setPoints(points);
+			this.impulseMode = spectrum.isCentroidMode();
+			// Read the data points in the background and show "Now Loading..." meanwhile.
+			this.loadPoints(() -> spectrum.readDataPoints(), points -> this.setPoints(points));
 		}
 	}
 }

@@ -25,7 +25,17 @@ import ninja.mspp.core.model.view.Rect;
 import ninja.mspp.core.view.DrawInfo;
 
 public class HeatMapCanvas extends ProfileCanvas {
+	/** Status key that is "true" while the heatmap of the selected sample is being calculated. */
+	public static final String LOADING_STATUS = "HEATMAP_LOADING";
+
 	private HeatMap heatmap;
+
+	/**
+	 * @return true while the heatmap of the selected sample is being calculated.
+	 */
+	public static boolean isHeatMapLoading() {
+		return "true".equals(MsppManager.getInstance().getStatus(LOADING_STATUS));
+	}
 	private Image image;
 	
 	protected Point endPoint;
@@ -284,6 +294,9 @@ public class HeatMapCanvas extends ProfileCanvas {
 	protected void onDraw(Graphics2D g, double width, double height) {
 		if(this.heatmap != null) {
 			this.drawData(g, width, height);
+		}
+		else if(isHeatMapLoading()) {
+			this.drawMessage(g, width, height, LOADING_MESSAGE);
 		}
 	}
 

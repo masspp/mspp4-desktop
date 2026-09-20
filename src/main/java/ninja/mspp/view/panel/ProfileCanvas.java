@@ -14,6 +14,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Stack;
+import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.MatrixUtils;
@@ -60,6 +62,14 @@ public class ProfileCanvas extends CanvasBase {
 	
 	protected String xTitle;
 	protected String yTitle;
+
+	protected static final String LOADING_MESSAGE = "Now Loading...";
+	protected static final String LOAD_ERROR_MESSAGE = "Failed to load the data.";
+	protected static final Font MESSAGE_FONT = new Font("SansSerif", Font.PLAIN, 16);
+
+	protected boolean loading;
+	protected boolean loadFailed;
+	private volatile long loadRequest;
 
 
 	public ProfileCanvas(String xTitle, String yTitle) {
@@ -120,6 +130,10 @@ public class ProfileCanvas extends CanvasBase {
 	}
 	
 	protected void onMousePressed(MouseEvent event) {
+		if(this.data == null || this.margin == null) {
+			// Nothing is drawn yet, for example while the data are loading.
+			return;
+		}
         double x = event.getX();
         double y = event.getY();
         
@@ -273,6 +287,8 @@ public class ProfileCanvas extends CanvasBase {
 	}
 
 	public void setPoints(DataPoints points) {
+		this.loading = false;
+		this.loadFailed = false;
 		this.data = new DrawingData(points);
 		this.points = points;
 		this.xRanges.clear();
@@ -690,6 +706,55 @@ public class ProfileCanvas extends CanvasBase {
 		return value;
 	}
 
+	/**
+	 * Clears the drawing and shows the loading message until setPoints is called.
+	 */
+	public void showLoading() {
+		this.loading = true;
+		this.loadFailed = false;
+		this.data = null;
+		this.points = null;
+		this.xRanges.clear();
+		this.yRanges.clear();
+		this.draw();
+	}
+
+	/**
+	 * Reads data points in the background and shows the loading message meanwhile.
+	 * When another load is requested before this one finishes, only the latest one is shown.
+	 */
+	protected void loadPoints(Callable<DataPoints> reader, Consumer<DataPoints> onLoaded) {
+		final long request = ++this.loadRequest;
+		this.showLoading();
+		BackgroundLoader.load(
+			() -> request == this.loadRequest ? reader.call() : null,
+			points -> {
+				if(request == this.loadRequest && points != null) {
+					onLoaded.accept(points);
+				}
+			},
+			error -> {
+				if(request == this.loadRequest) {
+					if(error != null) {
+						error.printStackTrace();
+					}
+					this.loading = false;
+					this.loadFailed = true;
+					this.draw();
+				}
+			}
+		);
+	}
+
+	protected void drawMessage(Graphics2D g, double width, double height, String message) {
+		g.setFont(MESSAGE_FONT);
+		g.setColor(Color.GRAY);
+		FontMetrics metrics = g.getFontMetrics(MESSAGE_FONT);
+		double x = (width - metrics.stringWidth(message)) / 2.0;
+		double y = (height + metrics.getAscent() - metrics.getDescent()) / 2.0;
+		g.drawString(message, (int)Math.round(x), (int)Math.round(y));
+	}
+
 	public void refresh() {
 		this.draw();
 	}
@@ -702,7 +767,13 @@ public class ProfileCanvas extends CanvasBase {
 
 	@Override
 	protected void onDraw(Graphics2D g, double width, double height) {
-		if(this.data != null) {
+		if(this.loading) {
+			this.drawMessage(g, width, height, LOADING_MESSAGE);
+		}
+		else if(this.loadFailed) {
+			this.drawMessage(g, width, height, LOAD_ERROR_MESSAGE);
+		}
+		else if(this.data != null) {
 			drawData(g, width, height);
 		}
 	}

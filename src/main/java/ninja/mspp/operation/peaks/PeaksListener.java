@@ -6,14 +6,18 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.math3.linear.RealMatrix;
 
+import ninja.mspp.MsppManager;
 import ninja.mspp.core.annotation.clazz.Listener;
 import ninja.mspp.core.annotation.method.ChromatogramCanvasForeground;
 import ninja.mspp.core.annotation.method.OnSelectChromatogram;
 import ninja.mspp.core.annotation.method.OnSelectSpectrum;
+import ninja.mspp.core.annotation.method.Refresh;
 import ninja.mspp.core.annotation.method.SpectrumCanvasForeground;
 import ninja.mspp.core.model.PeakManager;
 import ninja.mspp.core.model.ms.Chromatogram;
@@ -26,42 +30,65 @@ import ninja.mspp.core.model.view.Bounds;
 import ninja.mspp.core.model.view.Range;
 import ninja.mspp.core.model.view.Rect;
 import ninja.mspp.core.view.DrawInfo;
+import ninja.mspp.view.panel.BackgroundLoader;
 
 @Listener("peaks")
 public class PeaksListener {
+	// Spectra and chromatograms whose peaks are being picked. Used on the JavaFX application thread only.
+	private final Set<Object> picking = new HashSet<Object>();
+
 	@OnSelectSpectrum(order = 0)
 	public void onSelectSpectrum(Spectrum spectrum) {
 		PeakManager manager = PeakManager.getInstance();
 
-		if (!manager.hasPeaks(spectrum)) {
-			DataPoints points = spectrum.readDataPoints();
-
-			PeakList peaks = null;
-			if (spectrum.isCentroidMode()) {
-				peaks = this.getCentroidPeaks(points);
-			} else {
-				WakuraPeakDetection detector = new WakuraPeakDetection();
-				peaks = detector.detect(points);
-			}
-
-			if (peaks != null) {
-				manager.setPeaks(spectrum, peaks);
-			}
+		if (manager.hasPeaks(spectrum) || !this.picking.add(spectrum)) {
+			return;
 		}
+		// Pick the peaks in the background, then redraw the graphs to show their labels.
+		BackgroundLoader.load(
+			() -> {
+				DataPoints points = spectrum.readDataPoints();
+				if (spectrum.isCentroidMode()) {
+					return this.getCentroidPeaks(points);
+				}
+				WakuraPeakDetection detector = new WakuraPeakDetection();
+				return detector.detect(points);
+			},
+			peaks -> this.onPicked(spectrum, peaks, () -> manager.setPeaks(spectrum, peaks)),
+			error -> this.onPickFailed(spectrum, error)
+		);
 	}
 
 	@OnSelectChromatogram(order = 0)
 	public void onSelectChromatogram(Chromatogram chromatogram) {
 		PeakManager manager = PeakManager.getInstance();
 
-		if (!manager.hasPeaks(chromatogram)) {
-			DataPoints points = chromatogram.readDataPoints();
-			WakuraPeakDetection detector = new WakuraPeakDetection();
-			PeakList peaks = detector.detect(points);
+		if (manager.hasPeaks(chromatogram) || !this.picking.add(chromatogram)) {
+			return;
+		}
+		BackgroundLoader.load(
+			() -> {
+				DataPoints points = chromatogram.readDataPoints();
+				WakuraPeakDetection detector = new WakuraPeakDetection();
+				return detector.detect(points);
+			},
+			peaks -> this.onPicked(chromatogram, peaks, () -> manager.setPeaks(chromatogram, peaks)),
+			error -> this.onPickFailed(chromatogram, error)
+		);
+	}
 
-			if (peaks != null) {
-				manager.setPeaks(chromatogram, peaks);
-			}
+	private void onPicked(Object data, PeakList peaks, Runnable store) {
+		this.picking.remove(data);
+		if (peaks != null) {
+			store.run();
+			MsppManager.getInstance().invoke(Refresh.class);
+		}
+	}
+
+	private void onPickFailed(Object data, Throwable error) {
+		this.picking.remove(data);
+		if (error != null) {
+			error.printStackTrace();
 		}
 	}
 
