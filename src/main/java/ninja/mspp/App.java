@@ -20,10 +20,12 @@ import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import ninja.mspp.core.annotation.method.Service;
 import ninja.mspp.core.model.listener.ListenerMethod;
 import ninja.mspp.core.view.ViewInfo;
+import ninja.mspp.io.mzml.MsDataDropHandler;
 import ninja.mspp.view.GuiManager;
 import ninja.mspp.view.MainFrame;
 
@@ -43,7 +45,10 @@ public class App extends Application {
 		MainFrame mainFrame = viewInfo.getController();
 		guiManager.setMainFrame(mainFrame);
 		
-		Scene scene = new Scene(root);
+		// Wrap the window in a StackPane, so that an overlay can be shown while files are dragged over it.
+		StackPane container = new StackPane(root);
+		Scene scene = new Scene(container);
+		MsDataDropHandler.install(scene, container);
 		primaryStage.setScene(scene);
 		
 		String[] icons = {
