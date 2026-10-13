@@ -12,7 +12,7 @@ import ninja.mspp.view.GuiManager;
 @Listener("MS Data Input Listener")
 public class MzmlListener {
 
-	@MenuAction(value = "File > Open > MS Data...", order = 0)
+	@MenuAction(value = "File > Open > mzML...", order = 0)
 	public void onOpenMsData() {
 		GuiManager guiManager = GuiManager.getInstance();
 		MsppManager manager = MsppManager.getInstance();
@@ -20,14 +20,8 @@ public class MzmlListener {
 		String folderName = manager.getParameter(MsDataOpener.FOLDER_KEY);
 
 		FileChooser chooser = new FileChooser();
-		chooser.getExtensionFilters().add(
-			new FileChooser.ExtensionFilter("MS Files", "*.mzML", "*.raw", "*.wiff", "*.lcd")
-		);
 		chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("mzML Files", "*.mzML"));
-		chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Thermo RAW Files", "*.raw"));
-		chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Sciex WIFF Files", "*.wiff"));
-		chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Shimadzu LCD Files", "*.lcd"));
-		chooser.setTitle("Open MS Data File");
+		chooser.setTitle("Open mzML File");
 		if(folderName != null) {
 			File folder = new File(folderName);
 			if(folder.exists() && folder.isDirectory()) {

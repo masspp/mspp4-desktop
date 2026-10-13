@@ -13,38 +13,30 @@ import ninja.mspp.MsppManager;
 import ninja.mspp.core.annotation.method.OnOpenSample;
 import ninja.mspp.core.model.ms.Sample;
 import ninja.mspp.core.model.ms.TicChromatogram;
-import ninja.mspp.io.mzml.convert.VendorConverter;
-import ninja.mspp.io.mzml.ui.DockerRequiredDialog;
 import ninja.mspp.io.mzml.ui.ProgressDialog;
 import ninja.mspp.view.GuiManager;
 
 /**
- * Opens MS data files (mzML and vendor raw files) with a progress dialog.
- * Used by File > Open > MS Data... and by dropping files on the main window.
+ * Opens mzML files with a progress dialog.
+ * Used by File > Open > mzML... and by dropping files on the main window.
  */
 public class MsDataOpener {
 	static final String FOLDER_KEY = "MZML_INPUT_FOLDER";
 
-	private static final String[] EXTENSIONS = { ".mzml", ".raw", ".wiff", ".lcd" };
+	private static final String EXTENSION = ".mzml";
 
 	/**
-	 * @return true if the file is an MS data file that can be opened.
+	 * @return true if the file is an mzML file that can be opened.
 	 */
 	public static boolean isSupported(File file) {
 		if(file == null || !file.isFile()) {
 			return false;
 		}
-		String name = file.getName().toLowerCase(Locale.ROOT);
-		for(String extension : EXTENSIONS) {
-			if(name.endsWith(extension)) {
-				return true;
-			}
-		}
-		return false;
+		return file.getName().toLowerCase(Locale.ROOT).endsWith(EXTENSION);
 	}
 
 	/**
-	 * Opens the files one after another, so that vendor files are not converted at the same time.
+	 * Opens the files one after another.
 	 * Must be called on the JavaFX application thread.
 	 */
 	public static void open(List<File> files) {
@@ -62,11 +54,6 @@ public class MsDataOpener {
 		GuiManager guiManager = GuiManager.getInstance();
 		MsppManager manager = MsppManager.getInstance();
 
-		if(!DockerRequiredDialog.check(file.getName())) {
-			next.run();
-			return;
-		}
-
 		File parent = file.getParentFile();
 		if(parent != null) {
 			manager.saveParameter(FOLDER_KEY, parent.getAbsolutePath());
@@ -79,34 +66,14 @@ public class MsDataOpener {
 		);
 		dialog.show();
 
-		final boolean willConvert = VendorConverter.isVendorFile(file);
-		final double convertWeight = willConvert ? 0.7 : 0.0;
-		final double readWeight = 1.0 - convertWeight;
-
 		final Task<Sample> task = new Task<Sample>() {
 			@Override
 			protected Sample call() throws Exception {
-				File toRead = file;
-				if(willConvert) {
-					updateMessage("Converting " + file.getName() + " to mzML...");
-					VendorConverter converter = new VendorConverter();
-					converter.setStatusListener(s -> updateMessage(s));
-					converter.setProgressListener(p -> {
-						if(p < 0.0) {
-							dialog.setProgress(-1.0);
-						}
-						else {
-							dialog.setProgress(p * convertWeight);
-						}
-					});
-					toRead = converter.convertToMzml(file);
-					dialog.setProgress(convertWeight);
-				}
 				updateMessage("Reading mzML...");
 				MzmlReader reader = new MzmlReader();
 				return reader.read(
-					toRead.getAbsolutePath(),
-					p -> dialog.setProgress(convertWeight + p * readWeight),
+					file.getAbsolutePath(),
+					p -> dialog.setProgress(p),
 					s -> updateMessage(s)
 				);
 			}

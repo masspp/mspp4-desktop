@@ -683,7 +683,7 @@ public class JpostDialog {
 				return UNSUPPORTED;
 			}
 			String n = name.toLowerCase(Locale.ROOT);
-			if(n.endsWith(".mzml") || n.endsWith(".raw") || n.endsWith(".wiff") || n.endsWith(".lcd")) {
+			if(n.endsWith(".mzml")) {
 				return MS_DATA;
 			}
 			if(n.endsWith(".txt") || n.endsWith(".xlsx") || n.endsWith(".csv")) {
