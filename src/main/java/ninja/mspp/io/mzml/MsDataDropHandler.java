@@ -3,7 +3,6 @@ package ninja.mspp.io.mzml;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -21,7 +20,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 
 /**
- * Opens MS data files dropped on the main window. While files are dragged over the
+ * Opens mzML files dropped on the main window. While files are dragged over the
  * window, an overlay tells that dropping them opens them.
  */
 public class MsDataDropHandler {
@@ -132,7 +131,7 @@ public class MsDataDropHandler {
 		if(skipped > 0) {
 			text.append("\n\n").append(skipped)
 				.append(skipped == 1 ? " file is" : " files are")
-				.append(" not MS data and will be skipped.");
+				.append(" not an mzML file and will be skipped.");
 		}
 		return text.toString();
 	}
@@ -150,15 +149,13 @@ public class MsDataDropHandler {
 	}
 
 	/**
-	 * Returns the dropped files that are not opened. Sciex .wiff.scan files are not included,
-	 * because they are read together with their .wiff file.
+	 * Returns the dropped files that are not opened.
 	 */
 	private static List<File> skippedFiles(Dragboard board) {
 		List<File> files = new ArrayList<File>();
 		if(board.hasFiles()) {
 			for(File file : board.getFiles()) {
-				String name = file.getName().toLowerCase(Locale.ROOT);
-				if(!MsDataOpener.isSupported(file) && !name.endsWith(".wiff.scan")) {
+				if(!MsDataOpener.isSupported(file)) {
 					files.add(file);
 				}
 			}
@@ -175,7 +172,7 @@ public class MsDataDropHandler {
 		alert.setTitle("Open MS Data");
 		alert.setHeaderText("Some files were not opened");
 		alert.setContentText(
-			"Only mzML, Thermo .raw, Sciex .wiff and Shimadzu .lcd files can be opened."
+			"Only mzML files can be opened."
 			+ System.lineSeparator() + names
 		);
 		alert.showAndWait();
