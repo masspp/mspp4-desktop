@@ -71,12 +71,3 @@ Tips for faster iteration:
   $ mvn javafx:run
   ```
 
-###  Optional: Docker for vendor file conversion
-
-Opening Thermo `.raw` or Sciex `.wiff` files (via `File > Open > MS Data...`
-or `File > Convert > mzML...`) requires **Docker Desktop** to be running.
-The application launches the
-`chambm/pwiz-skyline-i-agree-to-the-vendor-licenses` image to invoke
-ProteoWizard `msconvert` for the conversion. Reading `.mzML` files does not
-require Docker.
-
