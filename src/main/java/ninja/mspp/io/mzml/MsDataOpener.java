@@ -13,26 +13,40 @@ import ninja.mspp.MsppManager;
 import ninja.mspp.core.annotation.method.OnOpenSample;
 import ninja.mspp.core.model.ms.Sample;
 import ninja.mspp.core.model.ms.TicChromatogram;
+import ninja.mspp.io.mgf.MgfReader;
 import ninja.mspp.io.mzml.ui.ProgressDialog;
 import ninja.mspp.view.GuiManager;
 
 /**
- * Opens mzML files with a progress dialog.
- * Used by File > Open > mzML... and by dropping files on the main window.
+ * Opens mzML and MGF files with a progress dialog.
+ * Used by the File > Open menu and by dropping files on the main window.
  */
 public class MsDataOpener {
 	static final String FOLDER_KEY = "MZML_INPUT_FOLDER";
 
-	private static final String EXTENSION = ".mzml";
+	private static final String MZML_EXTENSION = ".mzml";
+	private static final String MGF_EXTENSION = ".mgf";
 
 	/**
-	 * @return true if the file is an mzML file that can be opened.
+	 * @return true if the file is an mzML or MGF file that can be opened.
 	 */
 	public static boolean isSupported(File file) {
+		return isMzml(file) || isMgf(file);
+	}
+
+	static boolean isMzml(File file) {
+		return hasExtension(file, MZML_EXTENSION);
+	}
+
+	static boolean isMgf(File file) {
+		return hasExtension(file, MGF_EXTENSION);
+	}
+
+	private static boolean hasExtension(File file, String extension) {
 		if(file == null || !file.isFile()) {
 			return false;
 		}
-		return file.getName().toLowerCase(Locale.ROOT).endsWith(EXTENSION);
+		return file.getName().toLowerCase(Locale.ROOT).endsWith(extension);
 	}
 
 	/**
@@ -69,6 +83,14 @@ public class MsDataOpener {
 		final Task<Sample> task = new Task<Sample>() {
 			@Override
 			protected Sample call() throws Exception {
+				if(isMgf(file)) {
+					updateMessage("Reading MGF...");
+					return new MgfReader().read(
+						file,
+						p -> dialog.setProgress(p),
+						s -> updateMessage(s)
+					);
+				}
 				updateMessage("Reading mzML...");
 				MzmlReader reader = new MzmlReader();
 				return reader.read(
