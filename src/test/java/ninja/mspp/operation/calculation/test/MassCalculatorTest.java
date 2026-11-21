@@ -5,17 +5,16 @@ import static org.junit.Assert.assertEquals;
 import org.glycoinfo.ms.GlycanMassUtility.om.IMassElement;
 import org.glycoinfo.ms.GlycanMassUtility.om.IonCloud;
 import org.glycoinfo.ms.GlycanMassUtility.om.Molecule;
+import org.glycoinfo.ms.GlycanMassUtility.utils.CompoundParserType;
 import org.junit.Test;
 
-import ninja.mspp.operation.mass_calculator.model.mass.CompoundCreator;
-import ninja.mspp.operation.mass_calculator.model.mass.CompoundType;
 import ninja.mspp.operation.mass_calculator.model.mass.MassCalculator;
 
 public class MassCalculatorTest {
 
 	@Test
 	public void testGlycanComposition() {
-		CompoundType type = CompoundType.GLYCAN_COMPOSITION;
+		CompoundParserType type = CompoundParserType.GCMP;
 		assertComputeMass(type, "Hex", 180.063388);
 		assertComputeMass(type, "HexNAc", 221.089937);
 		assertComputeMass(type, "Hex(3)HexNAc(2)", 910.327780);
@@ -33,7 +32,7 @@ public class MassCalculatorTest {
 
 	@Test
 	public void testPeptide() {
-		CompoundType type = CompoundType.PEPTIDE;
+		CompoundParserType type = CompoundParserType.PEPT;
 		assertComputeMass(type, "A", 89.047678);
 		assertComputeMass(type, "C", 121.019749);
 		assertComputeMass(type, "D", 133.037508);
@@ -51,24 +50,24 @@ public class MassCalculatorTest {
 
 	@Test
 	public void testChemicalComposition() {
-		CompoundType type = CompoundType.CHEMICAL_COMPOSITION;
+		CompoundParserType type = CompoundParserType.CHEM;
 		assertComputeMass(type, "C6H12O6", 180.063388);
 		assertComputeMz(type, "C6H12O6", "H", null, 181.070664);
 	}
 
 
-	private void assertComputeMass(CompoundType type, String name, double mass) {
+	private void assertComputeMass(CompoundParserType type, String name, double mass) {
 		assertEquals(mass, getCalculator(type, name).computeMass(), 0.000001);
 	}
 
-	private void assertComputeMz(CompoundType type, String name, String ion, String neutralLoss, double mz) {
+	private void assertComputeMz(CompoundParserType type, String name, String ion, String neutralLoss, double mz) {
 		IonCloud ionCloud = IonCloud.parse(ion);
 		Molecule neutralLossMol = (neutralLoss == null)? new Molecule() : Molecule.parse(neutralLoss);
 		assertEquals(mz, getCalculator(type, name).computeMz(ionCloud, neutralLossMol), 0.000001);
 	}
 
-	private MassCalculator getCalculator(CompoundType type, String name) {
-		IMassElement compound = CompoundCreator.create(name, type);
+	private MassCalculator getCalculator(CompoundParserType type, String name) {
+		IMassElement compound = type.parse(name);
 		MassCalculator calc = new MassCalculator();
 		calc.addCompound(compound);
 		return calc;

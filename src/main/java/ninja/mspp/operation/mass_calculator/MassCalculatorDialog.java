@@ -9,6 +9,7 @@ import org.glycoinfo.ms.GlycanMassUtility.dict.molecule.NeutralType;
 import org.glycoinfo.ms.GlycanMassUtility.om.IMassElement;
 import org.glycoinfo.ms.GlycanMassUtility.om.IonCloud;
 import org.glycoinfo.ms.GlycanMassUtility.om.Molecule;
+import org.glycoinfo.ms.GlycanMassUtility.utils.CompoundParserType;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -26,8 +27,6 @@ import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 import ninja.mspp.MsppManager;
 import ninja.mspp.core.model.ms.Sample;
-import ninja.mspp.operation.mass_calculator.model.mass.CompoundCreator;
-import ninja.mspp.operation.mass_calculator.model.mass.CompoundType;
 import ninja.mspp.operation.mass_calculator.model.mass.MassCalculator;
 import ninja.mspp.operation.peak_filter.PeakFilterDialog;
 import ninja.mspp.view.GuiManager;
@@ -94,7 +93,7 @@ public class MassCalculatorDialog {
 	private void initialize() {
 		// Add items to ChoiceBox
 		List<String> typeNames = new ArrayList<>();
-		for (CompoundType type : CompoundType.values())
+		for (CompoundParserType type : CompoundParserType.values())
 			typeNames.add(type.getName());
 		typeChoiceBox.getItems().addAll(typeNames);
 		typeChoiceBox.getSelectionModel().selectFirst();
@@ -126,7 +125,7 @@ public class MassCalculatorDialog {
 	private void updateEgLabel() {
 		egLabel.setText("");
 		if (getSelectedType() != null)
-			egLabel.setText("e.g. " + getSelectedType().getEg());
+			egLabel.setText("e.g. " + getSelectedType().getFormatExample());
 	}
 
 	private void reset() {
@@ -147,7 +146,7 @@ public class MassCalculatorDialog {
 
 		updateEgLabel();
 
-		CompoundType type = getSelectedType();
+		CompoundParserType type = getSelectedType();
 		String name = nameField.getText();
 		if (name.isEmpty()) {
 			massField.clear();
@@ -169,7 +168,13 @@ public class MassCalculatorDialog {
 		// Calculate mass and mz
 		MassCalculator calc = new MassCalculator();
 		try {
-			IMassElement compound = CompoundCreator.create(name, type);
+			IMassElement compound = type.parse(name);
+			// Parser returns null for blank input (e.g. spaces only)
+			if (compound == null) {
+				massField.clear();
+				mzField.clear();
+				return;
+			}
 			calc.addCompound(compound);
 
 			IonCloud ionCloud = IonCloud.parse( getSelectedIon() );
@@ -242,8 +247,8 @@ public class MassCalculatorDialog {
 		reset();
 	}
 
-	private CompoundType getSelectedType() {
-		return CompoundType.fromName(typeChoiceBox.getValue());
+	private CompoundParserType getSelectedType() {
+		return CompoundParserType.fromName(typeChoiceBox.getValue());
 	}
 
 	private String getSelectedIon() {
