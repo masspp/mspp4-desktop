@@ -31,10 +31,6 @@
 			</snapshots>
 		</repository>
 		<repository>
-			<id>github</id>
-			<url>https://maven.pkg.github.com/masspp/mzjava-proteomics</url>
-		</repository>
-		<repository>
 			<id>GlycanMassUtility-gitlab-maven</id>
 			<url>https://gitlab.com/api/v4/projects/43695885/packages/maven</url>
 		</repository>
@@ -153,11 +149,6 @@
 			<groupId>javax.persistence</groupId>
 			<artifactId>javax.persistence-api</artifactId>
 			<version>2.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.expasy.mzjava</groupId>
-			<artifactId>mzjava-proteomics</artifactId>
-			<version>1.1.0-fix</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glycoinfo.ms</groupId>
