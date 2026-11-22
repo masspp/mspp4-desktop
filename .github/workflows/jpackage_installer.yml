@@ -19,10 +19,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest, macos-15-intel]
+        os: [ubuntu-latest, ubuntu-24.04, windows-latest, macos-latest, macos-15-intel]
         include:
           - os: ubuntu-latest
             platform: linux-debian
+            installer-type: deb
+            icon-path: ./src/main/resources/ninja/mspp/images/icon/MS_icon_256.png
+          - os: ubuntu-24.04
+            platform: linux-ubuntu-24.04
             installer-type: deb
             icon-path: ./src/main/resources/ninja/mspp/images/icon/MS_icon_256.png
           - os: windows-latest
