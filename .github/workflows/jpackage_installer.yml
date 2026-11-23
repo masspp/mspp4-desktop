@@ -19,10 +19,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest, macos-15-intel]
+        os: [ubuntu-latest, ubuntu-24.04, windows-latest, macos-latest, macos-15-intel]
         include:
           - os: ubuntu-latest
             platform: linux-debian
+            installer-type: deb
+            icon-path: ./src/main/resources/ninja/mspp/images/icon/MS_icon_256.png
+          - os: ubuntu-24.04
+            platform: linux-ubuntu-24.04
             installer-type: deb
             icon-path: ./src/main/resources/ninja/mspp/images/icon/MS_icon_256.png
           - os: windows-latest
@@ -40,7 +44,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         fetch-depth: 0
 
@@ -55,16 +59,29 @@ jobs:
         server-password: GITHUB_TOKEN
 
     - name: Cache Maven dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v6
       with:
         path: ~/.m2
         key: ${{ runner.os }}_m2_${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}_m2
 
+    - name: Resolve mspp4-core version from pom.xml
+      id: core
+      run: |
+        VERSION=$(sed -n 's:.*<mspp4-core.version>\(.*\)</mspp4-core.version>.*:\1:p' pom.xml)
+        if [ -z "$VERSION" ]; then
+          echo "mspp4-core.version property was not found in pom.xml" >&2
+          exit 1
+        fi
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+        echo "mspp4-core version: $VERSION"
+      shell: bash
+
     - name: Checkout mspp4-core repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         repository: masspp/mspp4-core
+        ref: v${{ steps.core.outputs.VERSION }}
         path: mspp4-core
 
     - name: Set execute permissions for Maven wrapper (Unix)
@@ -114,7 +131,7 @@ jobs:
       shell: bash
 
     - name: Create installer with jpackage (Linux)
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-24.04'
       run: |
         $JAVA_HOME/bin/jpackage \
           --input ./target \
@@ -184,7 +201,7 @@ jobs:
       shell: bash
 
     - name: Upload installer artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: mspp4-installer-${{ matrix.platform }}
         path: installers/*
@@ -192,7 +209,7 @@ jobs:
 
     - name: Upload build logs on failure
       if: failure()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: build-logs-${{ matrix.platform }}
         path: |

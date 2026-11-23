@@ -21,9 +21,10 @@ public class MzmlListener {
 
 		FileChooser chooser = new FileChooser();
 		chooser.getExtensionFilters().add(
-			new FileChooser.ExtensionFilter("MS Files", "*.mzML", "*.raw", "*.wiff", "*.lcd")
+			new FileChooser.ExtensionFilter("MS Files", "*.mzML", "*.mgf", "*.raw", "*.wiff", "*.lcd")
 		);
 		chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("mzML Files", "*.mzML"));
+		chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MGF Files", "*.mgf"));
 		chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Thermo RAW Files", "*.raw"));
 		chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Sciex WIFF Files", "*.wiff"));
 		chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Shimadzu LCD Files", "*.lcd"));

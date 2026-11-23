@@ -13,19 +13,21 @@ import ninja.mspp.MsppManager;
 import ninja.mspp.core.annotation.method.OnOpenSample;
 import ninja.mspp.core.model.ms.Sample;
 import ninja.mspp.core.model.ms.TicChromatogram;
+import ninja.mspp.io.mgf.MgfReader;
 import ninja.mspp.io.mzml.convert.VendorConverter;
 import ninja.mspp.io.mzml.ui.DockerRequiredDialog;
 import ninja.mspp.io.mzml.ui.ProgressDialog;
 import ninja.mspp.view.GuiManager;
 
 /**
- * Opens MS data files (mzML and vendor raw files) with a progress dialog.
- * Used by File > Open > MS Data... and by dropping files on the main window.
+ * Opens MS data files (mzML, MGF and vendor raw files) with a progress dialog.
+ * Used by the File > Open menu and by dropping files on the main window.
  */
 public class MsDataOpener {
 	static final String FOLDER_KEY = "MZML_INPUT_FOLDER";
 
-	private static final String[] EXTENSIONS = { ".mzml", ".raw", ".wiff", ".lcd" };
+	private static final String MGF_EXTENSION = ".mgf";
+	private static final String[] EXTENSIONS = { ".mzml", MGF_EXTENSION, ".raw", ".wiff", ".lcd" };
 
 	/**
 	 * @return true if the file is an MS data file that can be opened.
@@ -41,6 +43,13 @@ public class MsDataOpener {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * @return true if the file is an MGF file.
+	 */
+	static boolean isMgf(File file) {
+		return file != null && file.getName().toLowerCase(Locale.ROOT).endsWith(MGF_EXTENSION);
 	}
 
 	/**
@@ -86,6 +95,14 @@ public class MsDataOpener {
 		final Task<Sample> task = new Task<Sample>() {
 			@Override
 			protected Sample call() throws Exception {
+				if(isMgf(file)) {
+					updateMessage("Reading MGF...");
+					return new MgfReader().read(
+						file,
+						p -> dialog.setProgress(p),
+						s -> updateMessage(s)
+					);
+				}
 				File toRead = file;
 				if(willConvert) {
 					updateMessage("Converting " + file.getName() + " to mzML...");

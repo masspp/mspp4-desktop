@@ -175,7 +175,7 @@ public class MsDataDropHandler {
 		alert.setTitle("Open MS Data");
 		alert.setHeaderText("Some files were not opened");
 		alert.setContentText(
-			"Only mzML, Thermo .raw, Sciex .wiff and Shimadzu .lcd files can be opened."
+			"Only mzML, MGF, Thermo .raw, Sciex .wiff and Shimadzu .lcd files can be opened."
 			+ System.lineSeparator() + names
 		);
 		alert.showAndWait();
