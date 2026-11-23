@@ -3,7 +3,6 @@ package ninja.mspp.operation.mass_calculator;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import org.glycoinfo.ms.GlycanMassUtility.dict.molecule.NeutralType;
 import org.glycoinfo.ms.GlycanMassUtility.om.IMassElement;
@@ -12,11 +11,6 @@ import org.glycoinfo.ms.GlycanMassUtility.om.Molecule;
 import org.glycoinfo.ms.GlycanMassUtility.utils.CompoundParserType;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
@@ -24,12 +18,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
-import javafx.stage.Stage;
-import ninja.mspp.MsppManager;
-import ninja.mspp.core.model.ms.Sample;
 import ninja.mspp.operation.mass_calculator.model.mass.MassCalculator;
-import ninja.mspp.operation.peak_filter.PeakFilterDialog;
-import ninja.mspp.view.GuiManager;
 
 public class MassCalculatorDialog {
 
@@ -86,8 +75,7 @@ public class MassCalculatorDialog {
 
 	private ToggleGroup adductGroup;
 
-	private Stage currentStageForPeakFilter;
-	private PeakFilterDialog peakFilterDialog;
+	private PeakFilterOpener peakFilterOpener;
 
 	@FXML
 	private void initialize() {
@@ -122,7 +110,7 @@ public class MassCalculatorDialog {
 		// Search peaks only when m/z is calculated
 		searchButton.disableProperty().bind(mzField.textProperty().isEmpty());
 
-		currentStageForPeakFilter = null;
+		peakFilterOpener = new PeakFilterOpener();
 	}
 
 	private void updateEgLabel() {
@@ -208,48 +196,11 @@ public class MassCalculatorDialog {
 	@FXML
 	private void onAddToPeakFilter() throws IOException {
 		// Call the dialog for adding the current mass to the peak filter
-		MsppManager manager = MsppManager.getInstance();
-		
-		Sample sample = manager.getActiveSample();
-
-		// Check if a sample is selected
-		if(sample == null) {
-			ResourceBundle messages = manager.getMessages();
-			Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("Error");
-			alert.setHeaderText(messages.getString("sample.not_selected.title"));
-			alert.setContentText(messages.getString("sample.not_selected.content"));
-			alert.showAndWait();
-			return;
-		}
-
-		if (currentStageForPeakFilter == null) {
-			GuiManager guiManager = GuiManager.getInstance();
-			setUpPeakFilterDialog(manager, guiManager);
-		}
-
-		// Set the mass and mz values
 		String name = nameField.getText();
 		if (watLossCheckBox.isSelected())
 			name += " - H2O";
 		name += " + "+getSelectedIon();
-		peakFilterDialog.setInformation(name, mzField.getText(), null, false);
-
-		currentStageForPeakFilter.show();
-	}
-
-	private void setUpPeakFilterDialog(MsppManager manager, GuiManager guiManager) throws IOException {
-		FXMLLoader loader = new FXMLLoader(PeakFilterDialog.class.getResource("PeakFilterDialog.fxml"));
-		Parent root = loader.load();
-		peakFilterDialog = loader.getController();
-		peakFilterDialog.setSample(manager.getActiveSample());
-
-		Stage stage = new Stage();
-		stage.initOwner(guiManager.getMainStage());
-		stage.setTitle("Peak Filter");
-		Scene scene = new Scene(root);
-		stage.setScene(scene);
-		currentStageForPeakFilter = stage;
+		peakFilterOpener.open(name, mzField.getText());
 	}
 
 	@FXML
