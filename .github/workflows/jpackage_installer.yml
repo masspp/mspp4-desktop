@@ -44,7 +44,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         fetch-depth: 0
 
@@ -59,14 +59,14 @@ jobs:
         server-password: GITHUB_TOKEN
 
     - name: Cache Maven dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v6
       with:
         path: ~/.m2
         key: ${{ runner.os }}_m2_${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}_m2
 
     - name: Checkout mspp4-core repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         repository: masspp/mspp4-core
         path: mspp4-core
@@ -188,7 +188,7 @@ jobs:
       shell: bash
 
     - name: Upload installer artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: mspp4-installer-${{ matrix.platform }}
         path: installers/*
@@ -196,7 +196,7 @@ jobs:
 
     - name: Upload build logs on failure
       if: failure()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: build-logs-${{ matrix.platform }}
         path: |

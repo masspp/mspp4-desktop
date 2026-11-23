@@ -144,7 +144,7 @@ public class CyclingManager {
 		this.prevChromIndex = 0;
 		
 		MsppManager manager = MsppManager.getInstance();
-		manager.invoke(Refresh.class, null);
+		manager.invoke(Refresh.class, (Object[]) null);
 	}
 
 	public void drawSpectrum(DrawInfo<Spectrum> info) {
@@ -228,7 +228,7 @@ public class CyclingManager {
 		this.prevSpecIndex = 0;
 		
 		MsppManager manager = MsppManager.getInstance();
-		manager.invoke(Refresh.class, null);
+		manager.invoke(Refresh.class, (Object[]) null);
 	}
 	
 	

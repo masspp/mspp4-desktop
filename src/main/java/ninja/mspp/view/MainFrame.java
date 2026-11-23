@@ -70,7 +70,7 @@ public class MainFrame implements Initializable {
 			CheckMenuItem menuItem = new CheckMenuItem(name);
 			menuItem.setOnAction((event) -> {
 				try {
-					Parent parent = (Parent)method.invoke(null);
+					Parent parent = (Parent)method.invoke((Object[]) null);
 					this.pane.setCenter(parent);
 					this.pane.widthProperty().addListener(
 						(ov, oldVal, newVal) -> {
