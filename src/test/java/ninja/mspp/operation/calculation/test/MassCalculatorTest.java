@@ -62,6 +62,14 @@ public class MassCalculatorTest {
 		assertNull(calc.computeMz(IonCloud.parse("Na-H"), null));
 	}
 
+	@Test
+	public void testNegativeIon() {
+		CompoundParserType type = CompoundParserType.GCMP;
+		assertComputeMz(type, "Hex", "-H", null, 179.056112);
+		assertComputeMz(type, "Hex(3)HexNAc(2)", "-H", null, 909.320504);
+		assertComputeMz(type, "Hex(3)HexNAc(2)", "-2H", null, 454.156614);
+	}
+
 
 	private void assertComputeMass(CompoundParserType type, String name, double mass) {
 		assertEquals(mass, getCalculator(type, name).computeMass(), 0.000001);

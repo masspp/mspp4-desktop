@@ -34,7 +34,8 @@ public class MassCalculator {
 	 * Computes the m/z value of the compounds with the given ion and neutral loss.
 	 * @param ion IonCloud of the ion
 	 * @param neutralLoss Molecule of the neutral loss, or {@code null} for no neutral loss
-	 * @return m/z value, or {@code null} if the total charge of the ion is 0
+	 * @return m/z value, or {@code null} if the total charge of the ion is 0.
+	 * The value is positive also for a negative ion, as the m/z values of spectra are.
 	 */
 	public Double computeMz(IonCloud ion, Molecule neutralLoss) {
 		Molecule mol = new Molecule();
@@ -44,6 +45,7 @@ public class MassCalculator {
 		BigDecimal mz = MassUtils.computeMz(this.complex, ion, mol);
 		if (mz == null)
 			return null;
-		return mz.doubleValue();
+		// MassUtils returns a negative m/z for a negative ion
+		return mz.abs().doubleValue();
 	}
 }
