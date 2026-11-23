@@ -151,7 +151,8 @@ public class MassCalculatorDialog {
 
 		CompoundParserType type = getSelectedType();
 		String name = nameField.getText();
-		if (name.isEmpty()) {
+		// Treat a blank name (e.g. spaces only) as empty
+		if (name.trim().isEmpty()) {
 			massField.clear();
 			mzField.clear();
 			return;
