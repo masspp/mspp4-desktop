@@ -36,6 +36,10 @@
 			<id>GlycanMassUtility-gitlab-maven</id>
 			<url>https://gitlab.com/api/v4/projects/43695885/packages/maven</url>
 		</repository>
+		<repository>
+			<id>github</id>
+			<url>https://maven.pkg.github.com/masspp/ProFormaBuilder</url>
+		</repository>
 	</repositories>
 
 	<profiles>
@@ -156,6 +160,11 @@
 			<groupId>org.glycoinfo.ms</groupId>
 			<artifactId>GlycanMassUtility</artifactId>
 			<version>1.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>ninja.mspp</groupId>
+			<artifactId>proformabuilder</artifactId>
+			<version>0.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.mojo</groupId>
