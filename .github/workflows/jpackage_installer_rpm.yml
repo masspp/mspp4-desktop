@@ -100,17 +100,13 @@ jobs:
     - name: Build mspp4-core
       working-directory: ./mspp4-core
       run: |
-        ./mvnw clean package install -DskipTests
+        ./mvnw clean install -DskipTests
       shell: bash
 
     - name: Build proformabuilder
       working-directory: ./proformabuilder
       run: |
-        if [ "$RUNNER_OS" == "Windows" ]; then
-          ./mvnw.cmd clean package install -DskipTests
-        else
-          ./mvnw clean package install -DskipTests
-        fi
+        ./mvnw clean install -DskipTests
       shell: bash
 
     - name: Build mspp-desktop

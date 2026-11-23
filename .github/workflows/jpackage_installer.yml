@@ -111,9 +111,9 @@ jobs:
       working-directory: ./mspp4-core
       run: |
         if [ "$RUNNER_OS" == "Windows" ]; then
-          ./mvnw.cmd clean package install -DskipTests
+          ./mvnw.cmd clean install -DskipTests
         else
-          ./mvnw clean package install -DskipTests
+          ./mvnw clean install -DskipTests
         fi
       shell: bash
 
@@ -121,9 +121,9 @@ jobs:
       working-directory: ./proformabuilder
       run: |
         if [ "$RUNNER_OS" == "Windows" ]; then
-          ./mvnw.cmd clean package install -DskipTests
+          ./mvnw.cmd clean install -DskipTests
         else
-          ./mvnw clean package install -DskipTests
+          ./mvnw clean install -DskipTests
         fi
       shell: bash
 
