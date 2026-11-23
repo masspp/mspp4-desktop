@@ -19,6 +19,8 @@
 		<javafx.platform>${os.detected.classifier}</javafx.platform>
 		<!-- mspp4-core version: GitHub Actions reads this value and checks out the mspp4-core tag v<version>. -->
 		<mspp4-core.version>1.0.0</mspp4-core.version>
+		<!-- proformabuilder version: GitHub Actions reads this value and checks out the proformabuilder tag v<version>. -->
+		<proformabuilder.version>0.1.2</proformabuilder.version>
 	</properties>
 
 	<repositories>
@@ -164,7 +166,7 @@
 		<dependency>
 			<groupId>ninja.mspp</groupId>
 			<artifactId>proformabuilder</artifactId>
-			<version>0.1.1</version>
+			<version>${proformabuilder.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.mojo</groupId>

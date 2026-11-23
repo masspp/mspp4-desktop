@@ -84,12 +84,41 @@ jobs:
         ref: v${{ steps.core.outputs.VERSION }}
         path: mspp4-core
 
+    - name: Resolve proformabuilder version from pom.xml
+      id: proformabuilder
+      run: |
+        VERSION=$(sed -n 's:.*<proformabuilder.version>\(.*\)</proformabuilder.version>.*:\1:p' pom.xml)
+        if [ -z "$VERSION" ]; then
+          echo "proformabuilder.version property was not found in pom.xml" >&2
+          exit 1
+        fi
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+        echo "proformabuilder version: $VERSION"
+      shell: bash
+
+    - name: Checkout proformabuilder repository
+      uses: actions/checkout@v7
+      with:
+        repository: masspp/proformabuilder
+        ref: v${{ steps.proformabuilder.outputs.VERSION }}
+        path: proformabuilder
+
     - name: Set execute permissions for Maven wrapper (Unix)
       if: runner.os != 'Windows'
       run: chmod +x ./mvnw
 
     - name: Build mspp4-core
       working-directory: ./mspp4-core
+      run: |
+        if [ "$RUNNER_OS" == "Windows" ]; then
+          ./mvnw.cmd clean package install -DskipTests
+        else
+          ./mvnw clean package install -DskipTests
+        fi
+      shell: bash
+
+    - name: Build proformabuilder
+      working-directory: ./proformabuilder
       run: |
         if [ "$RUNNER_OS" == "Windows" ]; then
           ./mvnw.cmd clean package install -DskipTests
