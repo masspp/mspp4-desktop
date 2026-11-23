@@ -1,0 +1,27 @@
+{
+  "title": "Mass++ 4 Desktop Application (mspp4-desktop)",
+  "upload_type": "software",
+  "language": "eng",
+  "description": "Mass++ 4 is a software application for visualizing and analyzing mass spectrometry data.",
+  "creators": [
+    {
+      "name": "The Mass++ 4 developers"
+    }
+  ],
+  "license": "bsd-3-clause",
+  "keywords": [
+    "mass spectrometry",
+    "visualization",
+    "proteomics",
+    "glycomics",
+    "metabolomics"
+  ],
+  "related_identifiers": [
+    {
+      "scheme": "url",
+      "identifier": "https://mspp.ninja/",
+      "relation": "isDocumentedBy"
+    }
+  ]
+}
+

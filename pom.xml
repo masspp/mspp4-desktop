@@ -5,7 +5,7 @@
 
 	<groupId>ninja.mspp</groupId>
 	<artifactId>mspp4-desktop</artifactId>
-	<version>4.0.0</version>
+	<version>1.1.0</version>
 	<packaging>jar</packaging>
 
 	<name>mspp4</name>
@@ -17,6 +17,8 @@
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
 		<javafx.platform>${os.detected.classifier}</javafx.platform>
+		<!-- mspp4-core version: GitHub Actions reads this value and checks out the mspp4-core tag v<version>. -->
+		<mspp4-core.version>1.0.0</mspp4-core.version>
 	</properties>
 
 	<repositories>
@@ -77,7 +79,7 @@
 		<dependency>
 			<groupId>ninja.mspp</groupId>
 			<artifactId>mspp4-core</artifactId>
-			<version>4.0.0</version>
+			<version>${mspp4-core.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

@@ -56,10 +56,23 @@ jobs:
         key: ${{ matrix.distro }}_m2_${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ matrix.distro }}_m2
 
+    - name: Resolve mspp4-core version from pom.xml
+      id: core
+      run: |
+        VERSION=$(sed -n 's:.*<mspp4-core.version>\(.*\)</mspp4-core.version>.*:\1:p' pom.xml)
+        if [ -z "$VERSION" ]; then
+          echo "mspp4-core.version property was not found in pom.xml" >&2
+          exit 1
+        fi
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+        echo "mspp4-core version: $VERSION"
+      shell: bash
+
     - name: Checkout mspp4-core repository
       uses: actions/checkout@v7
       with:
         repository: masspp/mspp4-core
+        ref: v${{ steps.core.outputs.VERSION }}
         path: mspp4-core
 
     - name: Set execute permissions for Maven wrapper
