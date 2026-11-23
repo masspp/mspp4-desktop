@@ -75,6 +75,9 @@ public class MassCalculatorDialog {
 
 	private ToggleGroup adductGroup;
 
+	@FXML
+	private ProFormaCalculatorPane proFormaPaneController;
+
 	private PeakFilterOpener peakFilterOpener;
 
 	@FXML
@@ -110,7 +113,9 @@ public class MassCalculatorDialog {
 		// Search peaks only when m/z is calculated
 		searchButton.disableProperty().bind(mzField.textProperty().isEmpty());
 
+		// Share the peak filter dialog with the ProForma tab
 		peakFilterOpener = new PeakFilterOpener();
+		proFormaPaneController.setPeakFilterOpener(peakFilterOpener);
 	}
 
 	private void updateEgLabel() {

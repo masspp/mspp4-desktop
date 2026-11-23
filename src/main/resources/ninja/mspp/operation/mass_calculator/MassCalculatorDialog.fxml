@@ -54,6 +54,11 @@
                   </AnchorPane>
                </content>
             </Tab>
+            <Tab text="ProForma">
+               <content>
+                  <fx:include fx:id="proFormaPane" source="ProFormaCalculatorPane.fxml" />
+               </content>
+            </Tab>
          </tabs>
       </TabPane>
    </content>
