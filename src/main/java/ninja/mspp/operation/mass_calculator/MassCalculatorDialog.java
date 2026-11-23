@@ -119,6 +119,9 @@ public class MassCalculatorDialog {
 		ionField.textProperty().addListener((observable, oldValue, newValue) -> handleInputChange());
 		watLossCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> handleInputChange());
 
+		// Search peaks only when m/z is calculated
+		searchButton.disableProperty().bind(mzField.textProperty().isEmpty());
+
 		currentStageForPeakFilter = null;
 	}
 
