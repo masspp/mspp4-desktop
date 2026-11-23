@@ -5,21 +5,21 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="306.0" prefWidth="480.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ninja.mspp.operation.mass_calculator.ProFormaCalculatorPane">
+<AnchorPane prefHeight="300.0" prefWidth="480.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ninja.mspp.operation.mass_calculator.ProFormaCalculatorPane">
    <children>
-      <Label layoutX="20.0" layoutY="4.0" text="ProForma:" />
-      <TextField fx:id="proFormaField" layoutX="80.0" layoutY="0.0" prefHeight="25.0" prefWidth="390.0" />
+      <Label layoutX="20.0" layoutY="14.0" text="ProForma:" />
+      <TextField fx:id="proFormaField" layoutX="80.0" layoutY="10.0" prefHeight="25.0" prefWidth="390.0" />
 
-      <Label fx:id="egLabel" layoutX="80.0" layoutY="30.0" maxWidth="390" />
+      <Label fx:id="egLabel" layoutX="80.0" layoutY="40.0" maxWidth="390" />
 
-      <Label layoutX="20.0" layoutY="65.0" text="Mass:" />
-      <TextField fx:id="massField" editable="false" layoutX="80.0" layoutY="60.0" prefHeight="25.0" prefWidth="200.0" />
+      <Label layoutX="20.0" layoutY="75.0" text="Mass:" />
+      <TextField fx:id="massField" editable="false" layoutX="80.0" layoutY="70.0" prefHeight="25.0" prefWidth="200.0" />
 
-      <Label layoutX="20.0" layoutY="100.0" text="m/z:" />
-      <TextField fx:id="mzField" editable="false" layoutX="80.0" layoutY="95.0" prefHeight="25.0" prefWidth="200.0" />
-      <Button fx:id="resetButton" layoutX="295.0" layoutY="95.0" mnemonicParsing="false" onAction="#onReset" prefHeight="25.0" prefWidth="85.0" text="Reset" />
-      <Button fx:id="searchButton" layoutX="385.0" layoutY="95.0" mnemonicParsing="false" onAction="#onAddToPeakFilter" prefHeight="25.0" prefWidth="85.0" text="Search peak" textAlignment="CENTER" />
+      <Label layoutX="20.0" layoutY="110.0" text="m/z:" />
+      <TextField fx:id="mzField" editable="false" layoutX="80.0" layoutY="105.0" prefHeight="25.0" prefWidth="200.0" />
+      <Button fx:id="resetButton" layoutX="295.0" layoutY="105.0" mnemonicParsing="false" onAction="#onReset" prefHeight="25.0" prefWidth="85.0" text="Reset" />
+      <Button fx:id="searchButton" layoutX="385.0" layoutY="105.0" mnemonicParsing="false" onAction="#onAddToPeakFilter" prefHeight="25.0" prefWidth="85.0" text="Search peak" textAlignment="CENTER" />
 
-      <Label fx:id="warningLabel" layoutX="20.0" layoutY="130.0" maxWidth="450" textFill="#be0000" wrapText="true" />
+      <Label fx:id="warningLabel" layoutX="20.0" layoutY="140.0" maxWidth="450" textFill="#be0000" wrapText="true" />
    </children>
 </AnchorPane>
