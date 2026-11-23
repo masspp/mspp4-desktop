@@ -185,7 +185,13 @@ public class MassCalculatorDialog {
 
 			// Display mass and mz
 			massField.setText(String.valueOf(calc.computeMass()));
-			mzField.setText(String.valueOf(calc.computeMz(ionCloud, waterLoss)));
+			Double mz = calc.computeMz(ionCloud, waterLoss);
+			if (mz == null) {
+				warningLabel.setText("The total charge of the ion is 0, so m/z cannot be calculated.");
+				mzField.clear();
+				return;
+			}
+			mzField.setText(String.valueOf(mz));
 		} catch (IllegalArgumentException e) {
 			// handle invalid input
 			warningLabel.setText(e.getMessage());

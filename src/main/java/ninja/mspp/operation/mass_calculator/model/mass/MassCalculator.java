@@ -1,5 +1,6 @@
 package ninja.mspp.operation.mass_calculator.model.mass;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,11 +30,20 @@ public class MassCalculator {
 		return this.complex.getMass().doubleValue();
 	}
 
-	public double computeMz(IonCloud ion, Molecule neutralLoss) {
+	/**
+	 * Computes the m/z value of the compounds with the given ion and neutral loss.
+	 * @param ion IonCloud of the ion
+	 * @param neutralLoss Molecule of the neutral loss, or {@code null} for no neutral loss
+	 * @return m/z value, or {@code null} if the total charge of the ion is 0
+	 */
+	public Double computeMz(IonCloud ion, Molecule neutralLoss) {
 		Molecule mol = new Molecule();
 		if (neutralLoss != null)
 			mol = mol.addMolecules(neutralLoss, -1);
 
-		return MassUtils.computeMz(this.complex, ion, mol).doubleValue();
+		BigDecimal mz = MassUtils.computeMz(this.complex, ion, mol);
+		if (mz == null)
+			return null;
+		return mz.doubleValue();
 	}
 }

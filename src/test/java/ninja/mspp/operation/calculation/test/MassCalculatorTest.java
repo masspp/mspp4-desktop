@@ -1,6 +1,7 @@
 package ninja.mspp.operation.calculation.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.glycoinfo.ms.GlycanMassUtility.om.IMassElement;
 import org.glycoinfo.ms.GlycanMassUtility.om.IonCloud;
@@ -53,6 +54,12 @@ public class MassCalculatorTest {
 		CompoundParserType type = CompoundParserType.CHEM;
 		assertComputeMass(type, "C6H12O6", 180.063388);
 		assertComputeMz(type, "C6H12O6", "H", null, 181.070664);
+	}
+
+	@Test
+	public void testZeroCharge() {
+		MassCalculator calc = getCalculator(CompoundParserType.GCMP, "Hex");
+		assertNull(calc.computeMz(IonCloud.parse("Na-H"), null));
 	}
 
 
